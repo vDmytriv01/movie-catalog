@@ -1,0 +1,50 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+# IntelliJ temporary and shelf
+.shelf/
+workspace.xml
+
+# HTTP Requests
+.httpRequests/
+
+# IntelliJ data sources
+dataSources/
+dataSources.local.xml
+mavenHomeManager.xml
+
+# Environment configs (secrets)
+application.yml
+application.properties
+.env
