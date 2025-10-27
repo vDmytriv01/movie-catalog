@@ -46,5 +46,5 @@ mavenHomeManager.xml
 
 # Environment configs (secrets)
 application.yml
-application.properties
 .env
+/movie-catalog-frontend/

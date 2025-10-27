@@ -1,10 +1,8 @@
 FROM maven:3.9.8-eclipse-temurin-21 AS builder
 WORKDIR /application
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
-COPY src ./src
-RUN mvn clean package -DskipTests
-RUN java -Djarmode=layertools -jar target/movie-catalog-*.jar extract
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} application.jar
+RUN java -Djarmode=layertools -jar application.jar extract
 
 FROM eclipse-temurin:21-jdk-alpine
 WORKDIR /application
