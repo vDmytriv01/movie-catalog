@@ -19,11 +19,3 @@ databaseChangeLog:
       file: db/changelog/changeset/model/009-create-reviews-table.yaml
   - include:
       file: db/changelog/changeset/relation/010-create-user-roles-table.yaml
-  - include:
-      file: db/changelog/changeset/relation/011-create-movie-actors-table.yaml
-  - include:
-      file: db/changelog/changeset/relation/012-create-movie-directors-table.yaml
-  - include:
-      file: db/changelog/changeset/relation/013-create-movie-genres-table.yaml
-  - include:
-      file: db/changelog/changeset/relation/014-create-movie-countries-table.yaml

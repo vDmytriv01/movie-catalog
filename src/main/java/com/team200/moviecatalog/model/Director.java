@@ -5,10 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import java.util.HashSet;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +25,4 @@ public class Director {
 
     @Column(nullable = false, unique = true)
     private String fullName;
-
-    @ManyToMany(mappedBy = "directors")
-    private Set<Movie> movies = new HashSet<>();
 }

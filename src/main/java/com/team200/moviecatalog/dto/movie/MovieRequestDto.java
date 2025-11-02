@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Set;
 
 public record MovieRequestDto(
         @NotBlank
@@ -26,10 +25,8 @@ public record MovieRequestDto(
         @Positive
         Integer duration,
 
-        Set<Long> countryIds,
-
-        @DecimalMin(value = "0.0", inclusive = true)
-        @DecimalMax(value = "10.0", inclusive = true)
+        @DecimalMin("0.0")
+        @DecimalMax("10.0")
         BigDecimal averageRating,
 
         @Size(max = 500)
@@ -38,11 +35,7 @@ public record MovieRequestDto(
         @Size(max = 500)
         String trailerUrl,
 
-        Set<Long> directorIds,
-        Set<Long> genreIds,
-        Set<Long> actorIds,
-
         AgeRating ageRating,
+
         Category category
-) {
-}
+) {}
