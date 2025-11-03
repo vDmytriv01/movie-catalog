@@ -1,0 +1,462 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: add-sample-movies
+      author: vadym
+      changes:
+        # === users ===
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: username
+                  value: "user1"
+              - column:
+                  name: password
+                  value: "password1"
+              - column:
+                  name: avatar_url
+                  value: "https://example.com/avatars/user1.png"
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: username
+                  value: "user2"
+              - column:
+                  name: password
+                  value: "password2"
+              - column:
+                  name: avatar_url
+                  value: "https://example.com/avatars/user2.png"
+
+
+        # === countries ===
+        - insert:
+            tableName: countries
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: name
+                  value: "USA"
+        - insert:
+            tableName: countries
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: name
+                  value: "UK"
+
+        # === genres ===
+        - insert:
+            tableName: genres
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: name
+                  value: "Drama"
+        - insert:
+            tableName: genres
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: name
+                  value: "Sci-Fi"
+        - insert:
+            tableName: genres
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 3
+              - column:
+                  name: name
+                  value: "Biography"
+
+        # === directors ===
+        - insert:
+            tableName: directors
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: full_name
+                  value: "Christopher Nolan"
+        - insert:
+            tableName: directors
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: full_name
+                  value: "James Cameron"
+
+        # === actors ===
+        - insert:
+            tableName: actors
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: full_name
+                  value: "Cillian Murphy"
+        - insert:
+            tableName: actors
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: full_name
+                  value: "Emily Blunt"
+        - insert:
+            tableName: actors
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 3
+              - column:
+                  name: full_name
+                  value: "Leonardo DiCaprio"
+        - insert:
+            tableName: actors
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 4
+              - column:
+                  name: full_name
+                  value: "Kate Winslet"
+
+        # === movies ===
+        - insert:
+            tableName: movies
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: title
+                  value: "Oppenheimer"
+              - column:
+                  name: description
+                  value: "A story of J. Robert Oppenheimer and the atomic bomb."
+              - column:
+                  name: release_date
+                  valueDate: "2023-07-21"
+              - column:
+                  name: release_year
+                  valueNumeric: 2023
+              - column:
+                  name: duration
+                  valueNumeric: 180
+              - column:
+                  name: average_rating
+                  valueNumeric: 8.7
+              - column:
+                  name: poster_url
+                  value: "oppenheimer.jpg"
+              - column:
+                  name: trailer_url
+                  value: "oppenheimer.mp4"
+              - column:
+                  name: age_rating
+                  value: "R"
+              - column:
+                  name: category
+                  value: "FILM"
+
+        - insert:
+            tableName: movies
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: title
+                  value: "Inception"
+              - column:
+                  name: description
+                  value: "A thief who steals corporate secrets through dream-sharing technology."
+              - column:
+                  name: release_date
+                  valueDate: "2010-07-16"
+              - column:
+                  name: release_year
+                  valueNumeric: 2010
+              - column:
+                  name: duration
+                  valueNumeric: 148
+              - column:
+                  name: average_rating
+                  valueNumeric: 8.8
+              - column:
+                  name: poster_url
+                  value: "inception.jpg"
+              - column:
+                  name: trailer_url
+                  value: "inception.mp4"
+              - column:
+                  name: age_rating
+                  value: "PG_13"
+              - column:
+                  name: category
+                  value: "FILM"
+
+        - insert:
+            tableName: movies
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 3
+              - column:
+                  name: title
+                  value: "Titanic"
+              - column:
+                  name: description
+                  value: "A romance aboard the ill-fated RMS Titanic."
+              - column:
+                  name: release_date
+                  valueDate: "1997-12-19"
+              - column:
+                  name: release_year
+                  valueNumeric: 1997
+              - column:
+                  name: duration
+                  valueNumeric: 195
+              - column:
+                  name: average_rating
+                  valueNumeric: 9.1
+              - column:
+                  name: poster_url
+                  value: "titanic.jpg"
+              - column:
+                  name: trailer_url
+                  value: "titanic.mp4"
+              - column:
+                  name: age_rating
+                  value: "PG_13"
+              - column:
+                  name: category
+                  value: "FILM"
+
+        # === movie_genres ===
+        - insert:
+            tableName: movie_genres
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 1
+              - column:
+                  name: genre_id
+                  valueNumeric: 3
+        - insert:
+            tableName: movie_genres
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 2
+              - column:
+                  name: genre_id
+                  valueNumeric: 2
+        - insert:
+            tableName: movie_genres
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 3
+              - column:
+                  name: genre_id
+                  valueNumeric: 1
+
+        # === movie_directors ===
+        - insert:
+            tableName: movie_directors
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 1
+              - column:
+                  name: director_id
+                  valueNumeric: 1
+        - insert:
+            tableName: movie_directors
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 2
+              - column:
+                  name: director_id
+                  valueNumeric: 1
+        - insert:
+            tableName: movie_directors
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 3
+              - column:
+                  name: director_id
+                  valueNumeric: 2
+
+        # === movie_actors ===
+        - insert:
+            tableName: movie_actors
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 1
+              - column:
+                  name: actor_id
+                  valueNumeric: 1
+        - insert:
+            tableName: movie_actors
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 1
+              - column:
+                  name: actor_id
+                  valueNumeric: 2
+        - insert:
+            tableName: movie_actors
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 2
+              - column:
+                  name: actor_id
+                  valueNumeric: 3
+        - insert:
+            tableName: movie_actors
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 3
+              - column:
+                  name: actor_id
+                  valueNumeric: 3
+        - insert:
+            tableName: movie_actors
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 3
+              - column:
+                  name: actor_id
+                  valueNumeric: 4
+
+        # === movie_countries ===
+        - insert:
+            tableName: movie_countries
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 1
+              - column:
+                  name: country_id
+                  valueNumeric: 1
+        - insert:
+            tableName: movie_countries
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 2
+              - column:
+                  name: country_id
+                  valueNumeric: 1
+        - insert:
+            tableName: movie_countries
+            columns:
+              - column:
+                  name: movie_id
+                  valueNumeric: 3
+              - column:
+                  name: country_id
+                  valueNumeric: 2
+
+        # === reviews ===
+        - insert:
+            tableName: reviews
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: movie_id
+                  valueNumeric: 1
+              - column:
+                  name: user_id
+                  valueNumeric: 1
+              - column:
+                  name: comment
+                  value: "Incredible storytelling and acting."
+              - column:
+                  name: created_at
+                  valueDate: "2025-11-01T10:00:00"
+        - insert:
+            tableName: reviews
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: movie_id
+                  valueNumeric: 2
+              - column:
+                  name: user_id
+                  valueNumeric: 2
+              - column:
+                  name: comment
+                  value: "Mind-bending and brilliant!"
+              - column:
+                  name: created_at
+                  valueDate: "2025-11-02T09:00:00"
+
+        # === ratings ===
+        - insert:
+            tableName: ratings
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: movie_id
+                  valueNumeric: 1
+              - column:
+                  name: user_id
+                  valueNumeric: 1
+              - column:
+                  name: value
+                  valueNumeric: 9
+        - insert:
+            tableName: ratings
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: movie_id
+                  valueNumeric: 2
+              - column:
+                  name: user_id
+                  valueNumeric: 2
+              - column:
+                  name: value
+                  valueNumeric: 8
