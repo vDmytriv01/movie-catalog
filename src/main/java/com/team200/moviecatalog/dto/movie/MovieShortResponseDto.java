@@ -8,5 +8,6 @@ public record MovieShortResponseDto(
         String genres,
         Integer year,
         BigDecimal averageRating,
-        String posterUrl
+        String posterUrl,
+        String season
 ) {}

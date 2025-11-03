@@ -3,7 +3,6 @@ package com.team200.moviecatalog.mapper;
 import com.team200.moviecatalog.config.CentralMapperConfig;
 import com.team200.moviecatalog.dto.movie.MovieFullResponseDto;
 import com.team200.moviecatalog.dto.movie.MovieRequestDto;
-import com.team200.moviecatalog.dto.movie.MovieResponseDto;
 import com.team200.moviecatalog.dto.movie.MovieShortResponseDto;
 import com.team200.moviecatalog.model.Actor;
 import com.team200.moviecatalog.model.Country;
@@ -12,14 +11,18 @@ import com.team200.moviecatalog.model.Genre;
 import com.team200.moviecatalog.model.Movie;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(config = CentralMapperConfig.class)
 public interface MovieMapper {
 
     @Mapping(target = "genres", source = "genres", qualifiedByName = "genresToString")
+    @Mapping(target = "season", source = "season")
     MovieShortResponseDto toShortDto(Movie movie);
 
     @Mapping(target = "directors", source = "directors", qualifiedByName = "entityNames")
@@ -32,19 +35,19 @@ public interface MovieMapper {
     @Mapping(target = "directors", source = "directorIds", qualifiedByName = "toDirectors")
     @Mapping(target = "genres", source = "genreIds", qualifiedByName = "toGenres")
     @Mapping(target = "actors", source = "actorIds", qualifiedByName = "toActors")
+    @Mapping(target = "averageRating", source = "averageRating")
     Movie toEntity(MovieRequestDto dto);
 
-    @Mapping(target = "countries", source = "countries", qualifiedByName = "entityNames")
-    @Mapping(target = "directors", source = "directors", qualifiedByName = "entityNames")
-    @Mapping(target = "genres", source = "genres", qualifiedByName = "entityNames")
-    @Mapping(target = "actors", source = "actors", qualifiedByName = "entityNames")
-    @Mapping(target = "ageRating", source = "ageRating", qualifiedByName = "enumToString")
-    @Mapping(target = "category", source = "category", qualifiedByName = "enumToString")
-    MovieResponseDto toDto(Movie movie);
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "countries", source = "countryIds", qualifiedByName = "toCountries")
+    @Mapping(target = "directors", source = "directorIds", qualifiedByName = "toDirectors")
+    @Mapping(target = "genres", source = "genreIds", qualifiedByName = "toGenres")
+    @Mapping(target = "actors", source = "actorIds", qualifiedByName = "toActors")
+    void updateMovieFromDto(MovieRequestDto dto, @MappingTarget Movie movie);
 
     @Named("entityNames")
     default Set<String> toEntityNames(Set<?> entities) {
-        if (entities == null) {
+        if (entities == null || entities.isEmpty()) {
             return Set.of();
         }
         return entities.stream()

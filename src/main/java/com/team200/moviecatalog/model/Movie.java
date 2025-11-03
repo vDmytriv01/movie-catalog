@@ -23,6 +23,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "movies")
@@ -31,6 +33,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SQLDelete(sql = "UPDATE movies SET deleted = true WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class Movie {
 
     @Id
@@ -97,4 +101,12 @@ public class Movie {
 
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "season")
+    private Season season;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean deleted = false;
 }

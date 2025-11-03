@@ -6,16 +6,16 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CategorySpecificationProvider implements SpecificationProvider<Movie> {
-
+public class MinRatingSpecificationProvider implements SpecificationProvider<Movie> {
     @Override
     public String getKey() {
-        return "category";
+        return "minRating";
     }
 
     @Override
     public Specification<Movie> buildSpecification(String[] values) {
-        String category = values[0];
-        return (root, query, cb) -> cb.equal(root.get("category"), category);
+        Double rating = Double.parseDouble(values[0]);
+        return (root, query, cb) ->
+                cb.greaterThanOrEqualTo(root.get("averageRating"), rating);
     }
 }

@@ -14,10 +14,11 @@ public class MovieSpecificationBuilder
         implements SpecificationBuilder<Movie, MovieSearchParametersDto> {
 
     private static final String KEY_TITLE = "title";
-    private static final String KEY_GENRES = "genres";
-    private static final String KEY_COUNTRIES = "countries";
-    private static final String KEY_AGE_RATINGS = "ageRatings";
-    private static final String KEY_CATEGORIES = "categories";
+    private static final String KEY_GENRE = "genre";
+    private static final String KEY_AGE_RATING = "ageRating";
+    private static final String KEY_CATEGORY = "category";
+    private static final String KEY_YEAR = "year";
+    private static final String KEY_MIN_RATING = "minRating";
 
     private final SpecificationProviderManager<Movie> specificationProviderManager;
 
@@ -32,36 +33,33 @@ public class MovieSpecificationBuilder
         }
 
         if (params.year() != null) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("year"), params.year()));
+            spec = spec.and(specificationProviderManager
+                    .getSpecificationProvider(KEY_YEAR)
+                    .buildSpecification(new String[]{params.year().toString()}));
         }
 
-        if (params.genres() != null && params.genres().length > 0) {
+        if (params.genre() != null && !params.genre().isBlank()) {
             spec = spec.and(specificationProviderManager
-                    .getSpecificationProvider(KEY_GENRES)
-                    .buildSpecification(params.genres()));
+                    .getSpecificationProvider(KEY_GENRE)
+                    .buildSpecification(new String[]{params.genre()}));
         }
 
-        if (params.countries() != null && params.countries().length > 0) {
+        if (params.ageRating() != null && !params.ageRating().isBlank()) {
             spec = spec.and(specificationProviderManager
-                    .getSpecificationProvider(KEY_COUNTRIES)
-                    .buildSpecification(params.countries()));
+                    .getSpecificationProvider(KEY_AGE_RATING)
+                    .buildSpecification(new String[]{params.ageRating()}));
         }
 
-        if (params.ageRatings() != null && params.ageRatings().length > 0) {
+        if (params.category() != null && !params.category().isBlank()) {
             spec = spec.and(specificationProviderManager
-                    .getSpecificationProvider(KEY_AGE_RATINGS)
-                    .buildSpecification(params.ageRatings()));
-        }
-
-        if (params.categories() != null && params.categories().length > 0) {
-            spec = spec.and(specificationProviderManager
-                    .getSpecificationProvider(KEY_CATEGORIES)
-                    .buildSpecification(params.categories()));
+                    .getSpecificationProvider(KEY_CATEGORY)
+                    .buildSpecification(new String[]{params.category()}));
         }
 
         if (params.minRating() != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.greaterThanOrEqualTo(root.get("averageRating"), params.minRating()));
+            spec = spec.and(specificationProviderManager
+                    .getSpecificationProvider(KEY_MIN_RATING)
+                    .buildSpecification(new String[]{params.minRating().toString()}));
         }
 
         return spec;

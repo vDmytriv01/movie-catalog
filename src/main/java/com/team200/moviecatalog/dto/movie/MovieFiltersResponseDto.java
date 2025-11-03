@@ -7,5 +7,5 @@ public record MovieFiltersResponseDto(
         List<String> genres,
         List<String> ageRatings,
         List<Integer> years,
-        List<Integer> ratings
+        List<Double> ratingValues
 ) {}

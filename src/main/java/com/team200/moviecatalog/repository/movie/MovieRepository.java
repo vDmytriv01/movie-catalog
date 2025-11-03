@@ -1,7 +1,10 @@
 package com.team200.moviecatalog.repository.movie;
 
 import com.team200.moviecatalog.model.Movie;
+import com.team200.moviecatalog.model.Season;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +24,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long>,
             WHERE m.id = :id
             """)
     Optional<Movie> findByIdWithAll(@Param("id") Long id);
+
+    Page<Movie> findAllByOrderByAverageRatingDesc(Pageable pageable);
+
+    Page<Movie> findAllBySeasonOrderByAverageRatingDesc(Season season, Pageable pageable);
 }
