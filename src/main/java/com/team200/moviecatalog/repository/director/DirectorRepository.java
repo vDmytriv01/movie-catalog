@@ -1,4 +1,4 @@
-package com.team200.moviecatalog.repository;
+package com.team200.moviecatalog.repository.director;
 
 import com.team200.moviecatalog.model.Director;
 import org.springframework.data.jpa.repository.JpaRepository;

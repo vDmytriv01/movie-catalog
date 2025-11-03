@@ -1,4 +1,4 @@
-package com.team200.moviecatalog.repository;
+package com.team200.moviecatalog.repository.user;
 
 import com.team200.moviecatalog.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
