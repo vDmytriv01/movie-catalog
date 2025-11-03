@@ -181,7 +181,7 @@ databaseChangeLog:
                   value: "R"
               - column:
                   name: category
-                  value: "FILM"
+                  value: "MOVIE"
 
         - insert:
             tableName: movies
@@ -218,7 +218,7 @@ databaseChangeLog:
                   value: "PG_13"
               - column:
                   name: category
-                  value: "FILM"
+                  value: "MOVIE"
 
         - insert:
             tableName: movies
@@ -255,7 +255,7 @@ databaseChangeLog:
                   value: "PG_13"
               - column:
                   name: category
-                  value: "FILM"
+                  value: "MOVIE"
 
         # === movie_genres ===
         - insert:

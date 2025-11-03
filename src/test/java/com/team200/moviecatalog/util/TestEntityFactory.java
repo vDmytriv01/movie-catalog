@@ -1,5 +1,9 @@
 package com.team200.moviecatalog.util;
 
+import com.team200.moviecatalog.model.Actor;
+import com.team200.moviecatalog.model.Country;
+import com.team200.moviecatalog.model.Director;
+import com.team200.moviecatalog.model.Genre;
 import com.team200.moviecatalog.model.Movie;
 import com.team200.moviecatalog.model.Rating;
 import com.team200.moviecatalog.model.Review;
@@ -38,5 +42,33 @@ public final class TestEntityFactory {
         review.setMovie(movie);
         review.setUser(user);
         return review;
+    }
+
+    public static Director director(Long id, String fullName) {
+        Director d = new Director();
+        d.setId(id);
+        d.setFullName(fullName);
+        return d;
+    }
+
+    public static Actor actor(Long id, String fullName) {
+        Actor a = new Actor();
+        a.setId(id);
+        a.setFullName(fullName);
+        return a;
+    }
+
+    public static Genre genre(Long id, String name) {
+        Genre g = new Genre();
+        g.setId(id);
+        g.setName(name);
+        return g;
+    }
+
+    public static Country country(Long id, String name) {
+        Country c = new Country();
+        c.setId(id);
+        c.setName(name);
+        return c;
     }
 }
