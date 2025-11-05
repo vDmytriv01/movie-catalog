@@ -5,7 +5,7 @@ import com.team200.moviecatalog.dto.movie.MovieFullResponseDto;
 import com.team200.moviecatalog.dto.movie.MovieRequestDto;
 import com.team200.moviecatalog.dto.movie.MovieSearchParametersDto;
 import com.team200.moviecatalog.dto.movie.MovieShortResponseDto;
-import com.team200.moviecatalog.service.MovieService;
+import com.team200.moviecatalog.service.movie.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

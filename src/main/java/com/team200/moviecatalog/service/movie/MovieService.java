@@ -1,4 +1,4 @@
-package com.team200.moviecatalog.service;
+package com.team200.moviecatalog.service.movie;
 
 import com.team200.moviecatalog.dto.movie.MovieFiltersResponseDto;
 import com.team200.moviecatalog.dto.movie.MovieFullResponseDto;

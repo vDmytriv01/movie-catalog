@@ -19,3 +19,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: true
+              - column:
+                  name: deleted
+                  type: BIT
+                  defaultValueBoolean: false
