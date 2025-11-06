@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,7 +31,6 @@ import org.hibernate.annotations.SQLRestriction;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @SQLDelete(sql = "UPDATE movies SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
 public class Movie {
@@ -106,7 +104,6 @@ public class Movie {
     @Column(name = "season")
     private Season season;
 
-    @Builder.Default
     @Column(nullable = false)
     private boolean deleted = false;
 }

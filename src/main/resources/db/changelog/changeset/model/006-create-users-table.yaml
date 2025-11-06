@@ -15,7 +15,14 @@ databaseChangeLog:
                     nullable: false
 
               - column:
-                  name: username
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: nickname
                   type: VARCHAR(100)
                   constraints:
                     nullable: false
@@ -28,5 +35,20 @@ databaseChangeLog:
                     nullable: false
 
               - column:
-                  name: avatar_url
+                  name: first_name
+                  type: VARCHAR(100)
+
+              - column:
+                  name: last_name
+                  type: VARCHAR(100)
+
+              - column:
+                  name: profile_image_url
                   type: VARCHAR(512)
+
+              - column:
+                  name: deleted
+                  type: BIT(1)
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
