@@ -7,20 +7,24 @@ databaseChangeLog:
             tableName: movie_actors
             columns:
               - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
                   name: movie_id
                   type: BIGINT
                   constraints:
                     nullable: false
+
               - column:
                   name: actor_id
                   type: BIGINT
                   constraints:
                     nullable: false
-
-        - addPrimaryKey:
-            tableName: movie_actors
-            columnNames: movie_id, actor_id
-            constraintName: pk_movie_actors
 
         - addForeignKeyConstraint:
             baseTableName: movie_actors

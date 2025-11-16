@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: seed-reviews-v1
+      author: vDmytriv
+      changes:
+        - insert:
+            tableName: reviews
+            columns:
+              - column: { name: id, valueNumeric: 1 }
+              - column: { name: movie_id, valueNumeric: 1 }
+              - column: { name: user_id, valueNumeric: 1 }
+              - column: { name: comment, value: "Неймовірний сюжет і акторська гра!" }
+              - column: { name: created_at, valueDate: "2025-11-10T09:00:00" }
+
+        - insert:
+            tableName: reviews
+            columns:
+              - column: { name: id, valueNumeric: 2 }
+              - column: { name: movie_id, valueNumeric: 2 }
+              - column: { name: user_id, valueNumeric: 2 }
+              - column: { name: comment, value: "Дуже атмосферно, але трохи затягнуто." }
+              - column: { name: created_at, valueDate: "2025-11-10T09:30:00" }
+
+        - insert:
+            tableName: reviews
+            columns:
+              - column: { name: id, valueNumeric: 3 }
+              - column: { name: movie_id, valueNumeric: 3 }
+              - column: { name: user_id, valueNumeric: 2 }
+              - column: { name: comment, value: "Анімація неймовірна!" }
+              - column: { name: created_at, valueDate: "2025-11-10T09:45:00" }

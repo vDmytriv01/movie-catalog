@@ -5,10 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import java.util.HashSet;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,9 +29,6 @@ public class Actor {
 
     @Column(nullable = false, unique = true)
     private String fullName;
-
-    @ManyToMany(mappedBy = "actors")
-    private Set<Movie> movies = new HashSet<>();
 
     @Column(nullable = false)
     private boolean deleted = false;

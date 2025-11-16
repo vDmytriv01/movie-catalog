@@ -41,6 +41,11 @@ databaseChangeLog:
                   type: DECIMAL(3,1)
 
               - column:
+                  name: rating_count
+                  type: INT
+                  defaultValueNumeric: 0
+
+              - column:
                   name: poster_url
                   type: VARCHAR(512)
 
@@ -49,16 +54,26 @@ databaseChangeLog:
                   type: VARCHAR(512)
 
               - column:
+                  name: is_free
+                  type: BIT
+                  constraints:
+                    nullable: false
+
+              - column:
                   name: age_rating
                   type: VARCHAR(50)
 
               - column:
                   name: category
                   type: VARCHAR(50)
+
               - column:
                   name: season
-                  type: varchar(20)
+                  type: VARCHAR(20)
+
               - column:
                   name: deleted
                   type: BIT
                   defaultValueBoolean: false
+                  constraints:
+                    nullable: false

@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 public record MovieRequestDto(
+
         @NotBlank
         @Size(max = 255)
         String title,
@@ -21,12 +22,11 @@ public record MovieRequestDto(
 
         LocalDate releaseDate,
 
+        @Positive
         Integer year,
 
         @Positive
         Integer duration,
-
-        Set<Long> countryIds,
 
         @DecimalMin(value = "0.0", inclusive = true)
         @DecimalMax(value = "10.0", inclusive = true)
@@ -38,11 +38,16 @@ public record MovieRequestDto(
         @Size(max = 500)
         String trailerUrl,
 
+        boolean isFree,
+
         Set<Long> directorIds,
+
         Set<Long> genreIds,
-        Set<Long> actorIds,
+
+        Set<Long> countryIds,
 
         AgeRating ageRating,
+
         Category category
 ) {
 }

@@ -8,4 +8,5 @@ public record MovieFiltersResponseDto(
         List<String> ageRatings,
         List<Integer> years,
         List<Double> ratingValues
-) {}
+) {
+}

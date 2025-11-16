@@ -7,4 +7,5 @@ public record MovieSearchParametersDto(
         String ageRating,
         String category,
         Double minRating
-) {}
+) {
+}

@@ -19,7 +19,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long>,
             SELECT DISTINCT m FROM Movie m
             LEFT JOIN FETCH m.directors
             LEFT JOIN FETCH m.genres
-            LEFT JOIN FETCH m.actors
             LEFT JOIN FETCH m.countries
             WHERE m.id = :id
             """)

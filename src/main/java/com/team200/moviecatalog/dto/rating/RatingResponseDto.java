@@ -4,6 +4,6 @@ public record RatingResponseDto(
         Long id,
         Integer value,
         Long movieId,
-        Long userId
+        String userNickname
 ) {
 }

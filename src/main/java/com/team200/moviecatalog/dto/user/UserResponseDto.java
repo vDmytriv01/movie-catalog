@@ -7,4 +7,5 @@ public record UserResponseDto(
         String firstName,
         String lastName,
         String profileImageUrl
-) {}
+) {
+}

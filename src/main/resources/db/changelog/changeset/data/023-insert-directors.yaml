@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: seed-directors-v1
+      author: vDmytriv
+      changes:
+        - insert:
+            tableName: directors
+            columns:
+              - column: { name: id,         valueNumeric: 1 }
+              - column: { name: full_name,  value: "Christopher Nolan" }
+
+        - insert:
+            tableName: directors
+            columns:
+              - column: { name: id,         valueNumeric: 2 }
+              - column: { name: full_name,  value: "Alik Sakharov" }
+
+        - insert:
+            tableName: directors
+            columns:
+              - column: { name: id,         valueNumeric: 3 }
+              - column: { name: full_name,  value: "Hayao Miyazaki" }

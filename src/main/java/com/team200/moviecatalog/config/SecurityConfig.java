@@ -39,18 +39,23 @@ public class SecurityConfig {
                                 "/auth/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/error"
-                        ).permitAll()
-                        .requestMatchers(
-                                "/movies/**"
-                        ).permitAll()
-                        .requestMatchers("/reviews/**", "/ratings/**").authenticated()
+                                "/error").permitAll()
 
+                        .requestMatchers(org.springframework.http.HttpMethod.GET,
+                                "/movies/**",
+                                "/review-comments/**"
+                        ).permitAll()
+
+                        .requestMatchers(org.springframework.http.HttpMethod.POST,
+                                "/movies/*/feedback",
+                                "/review-comments"
+                        ).authenticated()
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

@@ -10,8 +10,6 @@ public record RatingRequestDto(
         @Max(10)
         Integer value,
         @NotNull
-        Long movieId,
-        @NotNull
-        Long userId
+        Long movieId
 ) {
 }

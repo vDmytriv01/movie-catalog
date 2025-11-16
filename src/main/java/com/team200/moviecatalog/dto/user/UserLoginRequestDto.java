@@ -9,4 +9,5 @@ public record UserLoginRequestDto(
         String email,
         @NotBlank
         String password
-) {}
+) {
+}

@@ -32,6 +32,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
 
+        - addUniqueConstraint:
+            tableName: ratings
+            columnNames: movie_id, user_id
+            constraintName: uk_ratings_movie_user
+
         - addForeignKeyConstraint:
             baseTableName: ratings
             baseColumnNames: movie_id

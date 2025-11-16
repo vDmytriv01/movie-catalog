@@ -57,9 +57,15 @@ public class Movie {
     @DecimalMax("10.0")
     private BigDecimal averageRating;
 
+    @Column(name = "rating_count")
+    private Integer ratingCount = 0;
+
     private String posterUrl;
 
     private String trailerUrl;
+
+    @Column(name = "is_free", nullable = false)
+    private boolean isFree;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -76,14 +82,6 @@ public class Movie {
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private Set<Genre> genres = new HashSet<>();
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "movie_actors",
-            joinColumns = @JoinColumn(name = "movie_id"),
-            inverseJoinColumns = @JoinColumn(name = "actor_id")
-    )
-    private Set<Actor> actors = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

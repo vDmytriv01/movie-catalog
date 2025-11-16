@@ -1,11 +1,12 @@
 package com.team200.moviecatalog.dto.review;
 
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record ReviewRequestDto(
-        @Size(max = 2000)
+        @NotBlank
         String comment,
-        Long movieId,
-        Long userId) {
-
+        @NotNull
+        Long movieId
+) {
 }

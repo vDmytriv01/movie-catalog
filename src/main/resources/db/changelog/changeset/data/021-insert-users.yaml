@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: seed-users-v1
+      author: vDmytriv
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, valueNumeric: 1 }
+              - column: { name: email, value: "admin@mail.com" }
+              - column: { name: nickname, value: "admin" }
+              - column: { name: password, value: "$2a$10$b0WrrXjVudc/ejGhVq4uHek6d4ci/ICGANG5x/VUlVLWGYNaBpKla" } # 12345678
+              - column: { name: first_name, value: "System" }
+              - column: { name: last_name, value: "Administrator" }
+              - column: { name: profile_image_url, value: "https://example.com/avatars/admin.png" }
+              - column: { name: deleted, valueBoolean: false }
+
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, valueNumeric: 2 }
+              - column: { name: email, value: "user@mail.com" }
+              - column: { name: nickname, value: "user" }
+              - column: { name: password, value: "$2a$10$b0WrrXjVudc/ejGhVq4uHek6d4ci/ICGANG5x/VUlVLWGYNaBpKla" } # 12345678
+              - column: { name: first_name, value: "Regular" }
+              - column: { name: last_name, value: "User" }
+              - column: { name: profile_image_url, value: "https://example.com/avatars/user.png" }
+              - column: { name: deleted, valueBoolean: false }
+
+        - insert:
+            tableName: users_roles
+            columns:
+              - column: { name: user_id, valueNumeric: 1 }   # admin
+              - column: { name: role_id, valueNumeric: 1 }   # ADMIN
+
+        - insert:
+            tableName: users_roles
+            columns:
+              - column: { name: user_id, valueNumeric: 2 }   # user
+              - column: { name: role_id, valueNumeric: 2 }   # USER

@@ -3,9 +3,13 @@ package com.team200.moviecatalog.controller;
 import com.team200.moviecatalog.dto.movie.MovieFiltersResponseDto;
 import com.team200.moviecatalog.dto.movie.MovieFullResponseDto;
 import com.team200.moviecatalog.dto.movie.MovieRequestDto;
+import com.team200.moviecatalog.dto.movie.MovieResponseDto;
 import com.team200.moviecatalog.dto.movie.MovieSearchParametersDto;
 import com.team200.moviecatalog.dto.movie.MovieShortResponseDto;
+import com.team200.moviecatalog.dto.movieactor.MovieActorDto;
 import com.team200.moviecatalog.service.movie.MovieService;
+import com.team200.moviecatalog.service.movieactor.MovieActorService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,17 +30,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class MovieController {
 
     private final MovieService movieService;
+    private final MovieActorService movieActorService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MovieFullResponseDto createMovie(@RequestBody MovieRequestDto dto) {
+    public MovieResponseDto createMovie(@RequestBody MovieRequestDto dto) {
         return movieService.createMovie(dto);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public MovieFullResponseDto updateMovie(@PathVariable Long id,
-                                            @RequestBody MovieRequestDto dto) {
+    public MovieResponseDto updateMovie(@PathVariable Long id,
+                                        @RequestBody MovieRequestDto dto) {
         return movieService.updateMovie(id, dto);
     }
 
@@ -76,5 +81,17 @@ public class MovieController {
     @ResponseStatus(HttpStatus.OK)
     public Page<MovieShortResponseDto> getTopByCurrentSeason(Pageable pageable) {
         return movieService.getTopByCurrentSeason(pageable);
+    }
+
+    @GetMapping("/{id}/similar")
+    @ResponseStatus(HttpStatus.OK)
+    public List<MovieShortResponseDto> getSimilarMovies(@PathVariable Long id) {
+        return movieService.getSimilarMovies(id);
+    }
+
+    @GetMapping("/{id}/actors")
+    @ResponseStatus(HttpStatus.OK)
+    public List<MovieActorDto> getActorsByMovie(@PathVariable Long id) {
+        return movieActorService.getCastByMovie(id);
     }
 }

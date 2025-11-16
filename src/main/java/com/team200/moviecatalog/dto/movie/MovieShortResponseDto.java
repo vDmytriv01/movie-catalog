@@ -9,5 +9,6 @@ public record MovieShortResponseDto(
         Integer year,
         BigDecimal averageRating,
         String posterUrl,
-        String season
-) {}
+        boolean isFree
+) {
+}
