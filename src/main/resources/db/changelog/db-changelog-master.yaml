@@ -31,6 +31,10 @@ databaseChangeLog:
       file: db/changelog/changeset/model/016-create-review-comments-table.yaml
   - include:
       file: db/changelog/changeset/relation/017-create-table-movie-actors.yaml
+  - include:
+      file: db/changelog/changeset/model/018-create-wishlists-table.yaml
+  - include:
+      file: db/changelog/changeset/relation/019-create-wishlist-items-table.yaml
 
   - include:
       file: db/changelog/changeset/data/020-insert-actors.yaml

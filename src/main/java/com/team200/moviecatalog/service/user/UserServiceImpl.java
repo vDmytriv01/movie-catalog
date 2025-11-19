@@ -7,8 +7,10 @@ import com.team200.moviecatalog.mapper.UserMapper;
 import com.team200.moviecatalog.model.Role;
 import com.team200.moviecatalog.model.RoleName;
 import com.team200.moviecatalog.model.User;
+import com.team200.moviecatalog.model.Wishlist;
 import com.team200.moviecatalog.repository.role.RoleRepository;
 import com.team200.moviecatalog.repository.user.UserRepository;
+import com.team200.moviecatalog.repository.wishlist.WishlistRepository;
 import jakarta.transaction.Transactional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final WishlistRepository wishlistRepository;
 
     @Override
     public UserResponseDto registration(UserRegisterRequestDto requestDto) {
@@ -49,6 +52,12 @@ public class UserServiceImpl implements UserService {
         user.setRoles(Set.of(userRole));
 
         User savedUser = userRepository.save(user);
+
+        Wishlist wishlist = Wishlist.builder()
+                .user(savedUser)
+                .build();
+        wishlistRepository.save(wishlist);
+
         return userMapper.toDto(savedUser);
     }
 
