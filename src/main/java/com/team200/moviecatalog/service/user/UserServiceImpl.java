@@ -1,5 +1,6 @@
 package com.team200.moviecatalog.service.user;
 
+import com.team200.moviecatalog.dto.user.UpdateUserRequestDto;
 import com.team200.moviecatalog.dto.user.UserRegisterRequestDto;
 import com.team200.moviecatalog.dto.user.UserResponseDto;
 import com.team200.moviecatalog.exception.RegistrationException;
@@ -69,28 +70,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto updateUser(String email, UserResponseDto updateDto) {
+    public UserResponseDto updateUser(String email, UpdateUserRequestDto updateDto) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RegistrationException("User not found"));
 
-        if (updateDto.firstName() != null) {
-            user.setFirstName(updateDto.firstName());
-        }
-        if (updateDto.lastName() != null) {
-            user.setLastName(updateDto.lastName());
-        }
-        if (updateDto.profileImageUrl() != null) {
-            user.setProfileImageUrl(updateDto.profileImageUrl());
-        }
         if (updateDto.nickname() != null
                 && !updateDto.nickname().equals(user.getNickname())) {
+
             if (userRepository.existsByNickname(updateDto.nickname())) {
                 throw new RegistrationException("Nickname already taken");
             }
             user.setNickname(updateDto.nickname());
         }
 
-        return userMapper.toDto(userRepository.save(user));
+        if (updateDto.profileUrl() != null) {
+            user.setProfileImageUrl(updateDto.profileUrl());
+        }
+
+        User updated = userRepository.save(user);
+        return userMapper.toDto(updated);
     }
 
     @Override

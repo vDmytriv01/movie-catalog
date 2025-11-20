@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,6 +41,8 @@ public class ReviewComment {
     @JoinColumn(name = "parent_comment_id")
     private ReviewComment parentComment;
 
+    @NotBlank
+    @Size(max = 500)
     @Column(nullable = false, length = 500)
     private String content;
 

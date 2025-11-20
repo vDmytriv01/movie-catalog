@@ -51,4 +51,6 @@ databaseChangeLog:
   - include:
       file: db/changelog/changeset/data/026-insert-movie-relations.yaml
   - include:
-      file: db/changelog/changeset/data/027-seed-review-comments-v1.yaml
+      file: db/changelog/changeset/data/027-seed-review.yaml
+  - include:
+      file: db/changelog/changeset/data/028-seed-review-comments.yaml

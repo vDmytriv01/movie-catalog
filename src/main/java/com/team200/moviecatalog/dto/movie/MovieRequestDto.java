@@ -5,6 +5,9 @@ import com.team200.moviecatalog.model.Category;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -20,6 +23,7 @@ public record MovieRequestDto(
         @Size(max = 2000)
         String description,
 
+        @PastOrPresent
         LocalDate releaseDate,
 
         @Positive
@@ -28,8 +32,8 @@ public record MovieRequestDto(
         @Positive
         Integer duration,
 
-        @DecimalMin(value = "0.0", inclusive = true)
-        @DecimalMax(value = "10.0", inclusive = true)
+        @DecimalMin("0.0")
+        @DecimalMax("10.0")
         BigDecimal averageRating,
 
         @Size(max = 500)
@@ -40,14 +44,18 @@ public record MovieRequestDto(
 
         boolean isFree,
 
-        Set<Long> directorIds,
+        @NotEmpty
+        Set<@Positive Long> directorIds,
 
-        Set<Long> genreIds,
+        @NotEmpty
+        Set<@Positive Long> genreIds,
 
-        Set<Long> countryIds,
+        @NotEmpty
+        Set<@Positive Long> countryIds,
 
+        @NotNull
         AgeRating ageRating,
 
+        @NotNull
         Category category
-) {
-}
+) {}

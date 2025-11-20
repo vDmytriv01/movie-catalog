@@ -2,7 +2,7 @@ package com.team200.moviecatalog.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 
 public record UserRegisterRequestDto(
         @NotBlank(message = "Email is required")
@@ -13,7 +13,11 @@ public record UserRegisterRequestDto(
         String nickname,
 
         @NotBlank(message = "Password is required")
-        @Size(min = 8, max = 64, message = "Password must be at least 8 characters")
+        @Pattern(
+                regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{8,64}$",
+                message = "Password must contain at least one letter, "
+                        + "one number, no spaces, and be 8–64 chars long"
+        )
         String password,
 
         @NotBlank(message = "Repeat password is required")

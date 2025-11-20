@@ -1,7 +1,9 @@
 package com.team200.moviecatalog.controller;
 
+import com.team200.moviecatalog.dto.user.UpdateUserRequestDto;
 import com.team200.moviecatalog.dto.user.UserResponseDto;
 import com.team200.moviecatalog.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,8 +28,10 @@ public class UserController {
     }
 
     @PutMapping("/current")
-    public UserResponseDto updateUser(@AuthenticationPrincipal UserDetails userDetails,
-                                      @RequestBody UserResponseDto updateDto) {
+    public UserResponseDto updateUser(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody UpdateUserRequestDto updateDto
+    ) {
         return userService.updateUser(userDetails.getUsername(), updateDto);
     }
 

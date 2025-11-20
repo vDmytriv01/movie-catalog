@@ -9,6 +9,7 @@ import com.team200.moviecatalog.dto.movie.MovieShortResponseDto;
 import com.team200.moviecatalog.dto.movieactor.MovieActorDto;
 import com.team200.moviecatalog.service.movie.MovieService;
 import com.team200.moviecatalog.service.movieactor.MovieActorService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,14 +35,14 @@ public class MovieController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MovieResponseDto createMovie(@RequestBody MovieRequestDto dto) {
+    public MovieResponseDto createMovie(@Valid @RequestBody MovieRequestDto dto) {
         return movieService.createMovie(dto);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public MovieResponseDto updateMovie(@PathVariable Long id,
-                                        @RequestBody MovieRequestDto dto) {
+                                        @Valid @RequestBody MovieRequestDto dto) {
         return movieService.updateMovie(id, dto);
     }
 
@@ -66,7 +67,7 @@ public class MovieController {
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     public Page<MovieShortResponseDto> searchMovies(
-            MovieSearchParametersDto params,
+            @Valid MovieSearchParametersDto params,
             Pageable pageable) {
         return movieService.search(params, pageable);
     }
