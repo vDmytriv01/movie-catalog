@@ -23,13 +23,11 @@ public class WishlistController {
     private final WishlistService wishlistService;
 
     @GetMapping
-    public WishlistResponseDto getWishlist(
-            @AuthenticationPrincipal UserDetails user
-    ) {
+    public WishlistResponseDto getWishlist(@AuthenticationPrincipal UserDetails user) {
         return wishlistService.getForUser(user.getUsername());
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/items/{movieId}")
     @ResponseStatus(HttpStatus.CREATED)
     public WishlistResponseDto addItem(
@@ -39,7 +37,7 @@ public class WishlistController {
         return wishlistService.add(user.getUsername(), movieId);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/items/{movieId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeItem(

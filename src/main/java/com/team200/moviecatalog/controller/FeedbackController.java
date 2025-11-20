@@ -31,7 +31,7 @@ public class FeedbackController {
         return feedbackService.getFeedbackByMovie(movieId);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public FeedbackResponseDto addOrUpdateFeedback(

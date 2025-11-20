@@ -25,7 +25,7 @@ public class ReviewCommentController {
 
     private final ReviewCommentService commentService;
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReviewCommentResponseDto addComment(

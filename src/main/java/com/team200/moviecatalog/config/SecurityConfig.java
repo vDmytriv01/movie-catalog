@@ -4,6 +4,7 @@ import com.team200.moviecatalog.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -39,17 +40,12 @@ public class SecurityConfig {
                                 "/auth/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/error").permitAll()
-
-                        .requestMatchers(org.springframework.http.HttpMethod.GET,
-                                "/movies/**",
-                                "/review-comments/**"
+                                "/error"
                         ).permitAll()
-
-                        .requestMatchers(org.springframework.http.HttpMethod.POST,
-                                "/movies/*/feedback",
-                                "/review-comments"
-                        ).authenticated()
+                        .requestMatchers(HttpMethod.GET,
+                                "/movies/**",
+                                "/reviews/*/comments/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
