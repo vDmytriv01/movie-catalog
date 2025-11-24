@@ -65,6 +65,11 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return buildError(HttpStatus.BAD_REQUEST, "REGISTRATION_ERROR", ex.getMessage());
     }
 
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<Object> handleFileStorage(FileStorageException ex) {
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_STORAGE_ERROR", ex.getMessage());
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex) {
         return buildError(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", ex.getMessage());

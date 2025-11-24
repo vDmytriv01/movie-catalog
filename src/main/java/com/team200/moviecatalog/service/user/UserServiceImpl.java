@@ -1,5 +1,6 @@
 package com.team200.moviecatalog.service.user;
 
+import com.team200.moviecatalog.dto.user.UpdateAvatarResponseDto;
 import com.team200.moviecatalog.dto.user.UpdateUserRequestDto;
 import com.team200.moviecatalog.dto.user.UserRegisterRequestDto;
 import com.team200.moviecatalog.dto.user.UserResponseDto;
@@ -16,6 +17,7 @@ import com.team200.moviecatalog.repository.role.RoleRepository;
 import com.team200.moviecatalog.repository.user.EmailVerificationTokenRepository;
 import com.team200.moviecatalog.repository.user.UserRepository;
 import com.team200.moviecatalog.repository.wishlist.WishlistRepository;
+import com.team200.moviecatalog.service.uploads.FileStorageService;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -23,6 +25,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final WishlistRepository wishlistRepository;
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final EmailService emailService;
+    private final FileStorageService fileStorageService;
 
     @Override
     public UserResponseDto registration(UserRegisterRequestDto requestDto) {
@@ -110,6 +114,19 @@ public class UserServiceImpl implements UserService {
 
         User updated = userRepository.save(user);
         return userMapper.toDto(updated);
+    }
+
+    @Override
+    public UpdateAvatarResponseDto updateAvatar(String email, MultipartFile file) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND + email));
+
+        String url = fileStorageService.saveUserAvatar(user.getId(), file);
+
+        user.setProfileImageUrl(url);
+        userRepository.save(user);
+
+        return new UpdateAvatarResponseDto(url);
     }
 
     @Override

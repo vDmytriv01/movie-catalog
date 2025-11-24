@@ -61,12 +61,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                .formLogin(form -> form
-                        .loginProcessingUrl("/auth/login")
-                        .failureHandler(authenticationFailureHandler)
-                        .permitAll()
-                )
-
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class);
