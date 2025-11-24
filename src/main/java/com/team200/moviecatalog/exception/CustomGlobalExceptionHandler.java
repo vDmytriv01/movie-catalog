@@ -62,7 +62,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 
     @ExceptionHandler(RegistrationException.class)
     public ResponseEntity<Object> handleRegistration(RegistrationException ex) {
-        return buildError(HttpStatus.CONFLICT, "REGISTRATION_ERROR", ex.getMessage());
+        return buildError(HttpStatus.BAD_REQUEST, "REGISTRATION_ERROR", ex.getMessage());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

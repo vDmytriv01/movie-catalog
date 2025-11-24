@@ -47,12 +47,12 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    private String firstName;
-    private String lastName;
-
     @Size(max = 255)
     @Column(name = "profile_image_url")
     private String profileImageUrl;
+
+    @Column(nullable = false)
+    private boolean emailVerified = false;
 
     @Column(nullable = false)
     private boolean deleted = false;

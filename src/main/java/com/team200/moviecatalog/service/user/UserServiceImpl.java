@@ -7,15 +7,19 @@ import com.team200.moviecatalog.exception.ConflictException;
 import com.team200.moviecatalog.exception.EntityNotFoundException;
 import com.team200.moviecatalog.exception.RegistrationException;
 import com.team200.moviecatalog.mapper.UserMapper;
+import com.team200.moviecatalog.model.EmailVerificationToken;
 import com.team200.moviecatalog.model.Role;
 import com.team200.moviecatalog.model.RoleName;
 import com.team200.moviecatalog.model.User;
 import com.team200.moviecatalog.model.Wishlist;
 import com.team200.moviecatalog.repository.role.RoleRepository;
+import com.team200.moviecatalog.repository.user.EmailVerificationTokenRepository;
 import com.team200.moviecatalog.repository.user.UserRepository;
 import com.team200.moviecatalog.repository.wishlist.WishlistRepository;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,6 +40,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final WishlistRepository wishlistRepository;
+    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
+    private final EmailService emailService;
 
     @Override
     public UserResponseDto registration(UserRegisterRequestDto requestDto) {
@@ -65,6 +71,14 @@ public class UserServiceImpl implements UserService {
                 .user(savedUser)
                 .build();
         wishlistRepository.save(wishlist);
+
+        EmailVerificationToken token = new EmailVerificationToken();
+        token.setToken(UUID.randomUUID().toString());
+        token.setExpiresAt(LocalDateTime.now().plusHours(24));
+        token.setUser(savedUser);
+        emailVerificationTokenRepository.save(token);
+
+        emailService.sendVerificationEmail(savedUser.getEmail(), token.getToken());
 
         return userMapper.toDto(savedUser);
     }
@@ -102,6 +116,8 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND + email));
+        emailVerificationTokenRepository.findByUser(user)
+                .ifPresent(emailVerificationTokenRepository::delete);
         userRepository.delete(user);
     }
 }

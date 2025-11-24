@@ -35,6 +35,10 @@ databaseChangeLog:
       file: db/changelog/changeset/model/018-create-wishlists-table.yaml
   - include:
       file: db/changelog/changeset/relation/019-create-wishlist-items-table.yaml
+  - include:
+      file: db/changelog/changeset/model/020-create-email-verification-token.yaml
+  - include:
+      file: db/changelog/changeset/model/021-add-email-verified-to-users.yaml
 
   - include:
       file: db/changelog/changeset/data/020-insert-actors.yaml

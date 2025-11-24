@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-email-verified-column
+      author: vadym
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: email_verified
+                  type: BIT(1)
+                  defaultValueBoolean: false
