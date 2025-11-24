@@ -2,6 +2,7 @@ package com.team200.moviecatalog.service.comment;
 
 import com.team200.moviecatalog.dto.comment.ReviewCommentRequestDto;
 import com.team200.moviecatalog.dto.comment.ReviewCommentResponseDto;
+import com.team200.moviecatalog.exception.EntityNotFoundException;
 import com.team200.moviecatalog.mapper.ReviewCommentMapper;
 import com.team200.moviecatalog.model.Review;
 import com.team200.moviecatalog.model.ReviewComment;
@@ -9,7 +10,6 @@ import com.team200.moviecatalog.model.User;
 import com.team200.moviecatalog.repository.comment.ReviewCommentRepository;
 import com.team200.moviecatalog.repository.review.ReviewRepository;
 import com.team200.moviecatalog.repository.user.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ReviewCommentServiceImpl implements ReviewCommentService {
+
+    private static final String USER_NOT_FOUND = "User not found: ";
+    private static final String REVIEW_NOT_FOUND = "Review not found: ";
 
     private final ReviewCommentRepository commentRepository;
     private final ReviewRepository reviewRepository;
@@ -33,10 +36,12 @@ public class ReviewCommentServiceImpl implements ReviewCommentService {
                                                UserDetails userDetails) {
 
         User user = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException(USER_NOT_FOUND + userDetails.getUsername()));
 
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException(REVIEW_NOT_FOUND + reviewId));
 
         ReviewComment comment = commentMapper.toEntity(dto);
         comment.setUser(user);

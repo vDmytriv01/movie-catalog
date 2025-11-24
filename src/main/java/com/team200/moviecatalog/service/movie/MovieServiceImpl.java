@@ -37,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MovieServiceImpl implements MovieService {
 
+    private static final String MOVIE_NOT_FOUND = "Movie not found: ";
+
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
     private final DirectorRepository directorRepository;
@@ -56,7 +58,7 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     public MovieResponseDto updateMovie(Long id, MovieRequestDto dto) {
         Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException(MOVIE_NOT_FOUND + id));
         movieMapper.updateMovieFromDto(dto, movie);
         enrichMovieWithDateData(movie);
         movieRepository.save(movie);
@@ -66,6 +68,9 @@ public class MovieServiceImpl implements MovieService {
     @Override
     @Transactional
     public void softDeleteMovie(Long id) {
+        if (!movieRepository.existsById(id)) {
+            throw new EntityNotFoundException(MOVIE_NOT_FOUND + id);
+        }
         movieRepository.deleteById(id);
     }
 
@@ -80,7 +85,7 @@ public class MovieServiceImpl implements MovieService {
     @Transactional(readOnly = true)
     public MovieFullResponseDto getFullById(Long id) {
         Movie movie = movieRepository.findByIdWithAll(id)
-                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException(MOVIE_NOT_FOUND + id));
 
         Set<String> directors = directorRepository.findAllByMovies_Id(id).stream()
                 .map(Director::getFullName)
@@ -137,8 +142,7 @@ public class MovieServiceImpl implements MovieService {
     @Transactional(readOnly = true)
     public List<MovieShortResponseDto> getSimilarMovies(Long movieId) {
         Movie movie = movieRepository.findByIdWithAll(movieId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Movie not found with id: " + movieId));
+                .orElseThrow(() -> new EntityNotFoundException(MOVIE_NOT_FOUND + movieId));
 
         Set<Long> genreIds = movie.getGenres().stream()
                 .map(Genre::getId)

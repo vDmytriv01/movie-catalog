@@ -2,6 +2,8 @@ package com.team200.moviecatalog.service.feedback;
 
 import com.team200.moviecatalog.dto.feedback.FeedbackRequestDto;
 import com.team200.moviecatalog.dto.feedback.FeedbackResponseDto;
+import com.team200.moviecatalog.exception.ConflictException;
+import com.team200.moviecatalog.exception.EntityNotFoundException;
 import com.team200.moviecatalog.mapper.FeedbackMapper;
 import com.team200.moviecatalog.model.Movie;
 import com.team200.moviecatalog.model.Rating;
@@ -11,7 +13,6 @@ import com.team200.moviecatalog.repository.movie.MovieRepository;
 import com.team200.moviecatalog.repository.rating.RatingRepository;
 import com.team200.moviecatalog.repository.review.ReviewRepository;
 import com.team200.moviecatalog.repository.user.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -24,6 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class FeedbackServiceImpl implements FeedbackService {
+
+    private static final String USER_NOT_FOUND = "User not found: ";
+    private static final String MOVIE_NOT_FOUND = "Movie not found: ";
+    private static final String DUPLICATE_REVIEW = "Review already exists for this movie";
+    private static final String DUPLICATE_RATING = "Rating already exists for this movie";
 
     private final ReviewRepository reviewRepository;
     private final RatingRepository ratingRepository;
@@ -54,18 +60,23 @@ public class FeedbackServiceImpl implements FeedbackService {
             FeedbackRequestDto dto,
             UserDetails userDetails) {
         User author = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException(USER_NOT_FOUND + userDetails.getUsername()));
 
         Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new EntityNotFoundException("Movie not found"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException(MOVIE_NOT_FOUND + movieId));
 
-        Review existingReview = reviewRepository.findByMovieIdAndUserId(
-                movieId, author.getId()).orElse(null);
-        Integer existingRating = ratingRepository.findValueByMovieAndUser(movieId, author.getId());
+        Review existingReview = reviewRepository
+                .findByMovieIdAndUserId(movieId, author.getId())
+                .orElse(null);
+
+        Integer existingRating = ratingRepository
+                .findValueByMovieAndUser(movieId, author.getId());
 
         if (dto.reviewText() != null) {
             if (existingReview != null && existingReview.getComment() != null) {
-                throw new IllegalStateException("You have already added a review for this movie");
+                throw new ConflictException(DUPLICATE_REVIEW);
             }
             Review review = existingReview != null ? existingReview : new Review();
             review.setMovie(movie);
@@ -77,7 +88,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
         if (dto.ratingValue() != null) {
             if (existingRating != null) {
-                throw new IllegalStateException("You have already rated this movie");
+                throw new ConflictException(DUPLICATE_RATING);
             }
             Rating rating = new Rating();
             rating.setMovie(movie);

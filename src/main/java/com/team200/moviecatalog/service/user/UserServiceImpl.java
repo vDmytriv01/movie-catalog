@@ -3,6 +3,8 @@ package com.team200.moviecatalog.service.user;
 import com.team200.moviecatalog.dto.user.UpdateUserRequestDto;
 import com.team200.moviecatalog.dto.user.UserRegisterRequestDto;
 import com.team200.moviecatalog.dto.user.UserResponseDto;
+import com.team200.moviecatalog.exception.ConflictException;
+import com.team200.moviecatalog.exception.EntityNotFoundException;
 import com.team200.moviecatalog.exception.RegistrationException;
 import com.team200.moviecatalog.mapper.UserMapper;
 import com.team200.moviecatalog.model.Role;
@@ -23,6 +25,12 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class UserServiceImpl implements UserService {
 
+    private static final String USER_NOT_FOUND = "User not found: ";
+    private static final String EMAIL_EXISTS = "Email already exists: ";
+    private static final String NICKNAME_EXISTS = "Nickname already taken: ";
+    private static final String PASSWORDS_NOT_MATCH = "Passwords do not match";
+    private static final String ROLE_NOT_FOUND = "Role USER not found ";
+
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
@@ -31,22 +39,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto registration(UserRegisterRequestDto requestDto) {
+
         if (userRepository.existsByEmail(requestDto.email())) {
-            throw new RegistrationException("User already exists with email "
-                    + requestDto.email());
+            throw new ConflictException(EMAIL_EXISTS + requestDto.email());
         }
 
         if (userRepository.existsByNickname(requestDto.nickname())) {
-            throw new RegistrationException("User already exists with nickname "
-                    + requestDto.nickname());
+            throw new ConflictException(NICKNAME_EXISTS + requestDto.nickname());
         }
 
         if (!requestDto.password().equals(requestDto.repeatPassword())) {
-            throw new RegistrationException("Passwords do not match");
+            throw new RegistrationException(PASSWORDS_NOT_MATCH);
         }
 
         Role userRole = roleRepository.findByName(RoleName.USER)
-                .orElseThrow(() -> new RegistrationException("Default role USER not found"));
+                .orElseThrow(() -> new EntityNotFoundException(ROLE_NOT_FOUND));
 
         User user = userMapper.toModel(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.password()));
@@ -65,20 +72,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getCurrentUser(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RegistrationException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND + email));
         return userMapper.toDto(user);
     }
 
     @Override
     public UserResponseDto updateUser(String email, UpdateUserRequestDto updateDto) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RegistrationException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND + email));
 
         if (updateDto.nickname() != null
                 && !updateDto.nickname().equals(user.getNickname())) {
 
             if (userRepository.existsByNickname(updateDto.nickname())) {
-                throw new RegistrationException("Nickname already taken");
+                throw new ConflictException(NICKNAME_EXISTS + updateDto.nickname());
             }
             user.setNickname(updateDto.nickname());
         }
@@ -94,7 +101,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RegistrationException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND + email));
         userRepository.delete(user);
     }
 }

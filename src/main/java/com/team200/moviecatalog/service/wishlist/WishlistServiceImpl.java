@@ -1,6 +1,8 @@
 package com.team200.moviecatalog.service.wishlist;
 
 import com.team200.moviecatalog.dto.wishlist.WishlistResponseDto;
+import com.team200.moviecatalog.exception.ConflictException;
+import com.team200.moviecatalog.exception.EntityNotFoundException;
 import com.team200.moviecatalog.mapper.WishlistMapper;
 import com.team200.moviecatalog.model.Movie;
 import com.team200.moviecatalog.model.User;
@@ -10,7 +12,6 @@ import com.team200.moviecatalog.repository.movie.MovieRepository;
 import com.team200.moviecatalog.repository.user.UserRepository;
 import com.team200.moviecatalog.repository.wishlist.WishlistItemRepository;
 import com.team200.moviecatalog.repository.wishlist.WishlistRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class WishlistServiceImpl implements WishlistService {
+
+    private static final String USER_NOT_FOUND = "User not found: ";
+    private static final String MOVIE_NOT_FOUND = "Movie not found: ";
+    private static final String WISHLIST_NOT_FOUND = "Wishlist not found: ";
+    private static final String MOVIE_ALREADY_IN_WISHLIST = "Movie already in wishlist";
+    private static final String MOVIE_NOT_IN_WISHLIST = "Movie not in wishlist";
 
     private final WishlistRepository wishlistRepository;
     private final WishlistItemRepository itemRepository;
@@ -29,7 +36,8 @@ public class WishlistServiceImpl implements WishlistService {
     @Transactional(readOnly = true)
     public WishlistResponseDto getForUser(String email) {
         Wishlist wishlist = wishlistRepository.findByUserEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Wishlist not found"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException(WISHLIST_NOT_FOUND + email));
 
         return wishlistMapper.toDto(wishlist);
     }
@@ -39,17 +47,19 @@ public class WishlistServiceImpl implements WishlistService {
     public WishlistResponseDto add(String email, Long movieId) {
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException(USER_NOT_FOUND + email));
 
         Wishlist wishlist = wishlistRepository.findByUserEmail(email)
                 .orElseGet(() -> createWishlist(user));
 
         Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new EntityNotFoundException("Movie not found"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException(MOVIE_NOT_FOUND + movieId));
 
         itemRepository.findByWishlistIdAndMovieId(wishlist.getId(), movieId)
                 .ifPresent(item -> {
-                    throw new IllegalStateException("Movie already in wishlist");
+                    throw new ConflictException(MOVIE_ALREADY_IN_WISHLIST);
                 });
 
         WishlistItem item = WishlistItem.builder()
@@ -68,10 +78,12 @@ public class WishlistServiceImpl implements WishlistService {
     public void remove(String email, Long movieId) {
 
         Wishlist wishlist = wishlistRepository.findByUserEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Wishlist not found"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException(WISHLIST_NOT_FOUND + email));
 
         WishlistItem item = itemRepository.findByWishlistIdAndMovieId(wishlist.getId(), movieId)
-                .orElseThrow(() -> new EntityNotFoundException("Movie not in wishlist"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException(MOVIE_NOT_IN_WISHLIST));
 
         wishlist.getItems().remove(item);
         itemRepository.delete(item);
