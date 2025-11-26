@@ -1,11 +1,14 @@
 package com.team200.moviecatalog.controller;
 
+import com.team200.moviecatalog.dto.user.PasswordResetConfirmDto;
+import com.team200.moviecatalog.dto.user.PasswordResetRequestDto;
 import com.team200.moviecatalog.dto.user.UserLoginRequestDto;
 import com.team200.moviecatalog.dto.user.UserLoginResponseDto;
 import com.team200.moviecatalog.dto.user.UserRegisterRequestDto;
 import com.team200.moviecatalog.dto.user.UserResponseDto;
 import com.team200.moviecatalog.service.user.AuthenticationService;
 import com.team200.moviecatalog.service.user.EmailVerificationService;
+import com.team200.moviecatalog.service.user.PasswordResetService;
 import com.team200.moviecatalog.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final UserService userService;
     private final EmailVerificationService emailVerificationService;
+    private final PasswordResetService passwordResetService;
 
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
@@ -41,6 +45,19 @@ public class AuthenticationController {
     @PostMapping("/resend-verification")
     public String resendVerification(@RequestParam String email) {
         return emailVerificationService.resend(email);
+    }
+
+    @PostMapping("/password/reset-request")
+    @ResponseStatus(HttpStatus.OK)
+    public void requestPasswordReset(@RequestBody @Valid PasswordResetRequestDto dto) {
+        passwordResetService.requestPasswordReset(dto.email());
+    }
+
+    @PostMapping("/password/reset")
+    @ResponseStatus(HttpStatus.OK)
+    public String resetPassword(@RequestBody @Valid PasswordResetConfirmDto dto) {
+        passwordResetService.resetPassword(dto.token(), dto.newPassword());
+        return "Password successfully reset.";
     }
 
     @PostMapping("/login")

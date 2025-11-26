@@ -39,6 +39,8 @@ databaseChangeLog:
       file: db/changelog/changeset/model/020-create-email-verification-token.yaml
   - include:
       file: db/changelog/changeset/model/021-add-email-verified-to-users.yaml
+  - include:
+      file: db/changelog/changeset/model/022-create-password-reset-tokens.yaml
 
   - include:
       file: db/changelog/changeset/data/020-insert-actors.yaml
