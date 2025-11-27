@@ -4,12 +4,14 @@ import com.team200.moviecatalog.dto.comment.ReviewCommentRequestDto;
 import com.team200.moviecatalog.dto.comment.ReviewCommentResponseDto;
 import com.team200.moviecatalog.service.comment.ReviewCommentService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/reviews/{reviewId}/comments")
 @RequiredArgsConstructor
+@Validated
 public class ReviewCommentController {
 
     private final ReviewCommentService commentService;
@@ -29,7 +32,7 @@ public class ReviewCommentController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReviewCommentResponseDto addComment(
-            @PathVariable Long reviewId,
+            @PathVariable @Positive Long reviewId,
             @Valid @RequestBody ReviewCommentRequestDto dto,
             @AuthenticationPrincipal UserDetails user
     ) {
@@ -38,7 +41,7 @@ public class ReviewCommentController {
 
     @GetMapping
     public List<ReviewCommentResponseDto> getCommentsByReview(
-            @PathVariable Long reviewId
+            @PathVariable @Positive Long reviewId
     ) {
         return commentService.getCommentsByReview(reviewId);
     }

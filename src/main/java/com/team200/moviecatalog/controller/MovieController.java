@@ -10,12 +10,14 @@ import com.team200.moviecatalog.dto.movieactor.MovieActorDto;
 import com.team200.moviecatalog.service.movie.MovieService;
 import com.team200.moviecatalog.service.movieactor.MovieActorService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/movies")
 @RequiredArgsConstructor
+@Validated
 public class MovieController {
 
     private final MovieService movieService;
@@ -44,7 +47,7 @@ public class MovieController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public MovieResponseDto updateMovie(@PathVariable Long id,
+    public MovieResponseDto updateMovie(@PathVariable @Positive Long id,
                                         @Valid @RequestBody MovieRequestDto dto) {
         return movieService.updateMovie(id, dto);
     }
@@ -52,7 +55,7 @@ public class MovieController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void softDeleteMovie(@PathVariable Long id) {
+    public void softDeleteMovie(@PathVariable @Positive Long id) {
         movieService.softDeleteMovie(id);
     }
 
@@ -64,7 +67,7 @@ public class MovieController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public MovieFullResponseDto getMovieById(@PathVariable Long id) {
+    public MovieFullResponseDto getMovieById(@PathVariable @Positive Long id) {
         return movieService.getFullById(id);
     }
 
@@ -90,13 +93,13 @@ public class MovieController {
 
     @GetMapping("/{id}/similar")
     @ResponseStatus(HttpStatus.OK)
-    public List<MovieShortResponseDto> getSimilarMovies(@PathVariable Long id) {
+    public List<MovieShortResponseDto> getSimilarMovies(@PathVariable @Positive Long id) {
         return movieService.getSimilarMovies(id);
     }
 
     @GetMapping("/{id}/actors")
     @ResponseStatus(HttpStatus.OK)
-    public List<MovieActorDto> getActorsByMovie(@PathVariable Long id) {
+    public List<MovieActorDto> getActorsByMovie(@PathVariable @Positive Long id) {
         return movieActorService.getCastByMovie(id);
     }
 }

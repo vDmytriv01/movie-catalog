@@ -9,7 +9,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Locale;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -23,9 +26,10 @@ public class FileStorageService {
     private static final String IMAGE_PNG = "image/png";
     private static final String IMAGE_JPEG = "image/jpeg";
 
-    private final Path root = Paths.get(AVATARS_DIR);
+    private final Path root;
 
     public FileStorageService() {
+        this.root = Paths.get(AVATARS_DIR).toAbsolutePath().normalize();
         try {
             Files.createDirectories(root);
         } catch (IOException e) {
@@ -37,11 +41,20 @@ public class FileStorageService {
         try {
             validateFile(file);
 
-            String extension = getExtension(file.getOriginalFilename());
+            String extension = getExtension(file.getOriginalFilename()).toLowerCase(Locale.ROOT);
             String filename = userId + "." + extension;
 
-            Path filePath = root.resolve(filename);
-            Files.write(filePath, file.getBytes());
+            Path filePath = root.resolve(filename).normalize();
+            if (!filePath.startsWith(root)) {
+                throw new FileStorageException(INVALID_IMAGE_FORMAT);
+            }
+
+            Files.write(
+                    filePath,
+                    file.getBytes(),
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING
+            );
 
             return AVATARS_URL_PREFIX + filename;
 
@@ -55,11 +68,25 @@ public class FileStorageService {
             throw new FileStorageException(EMPTY_FILE_ERROR);
         }
 
+        String extension = getExtension(file.getOriginalFilename());
+        boolean pngExtension = extension != null && extension.equalsIgnoreCase("png");
+        boolean jpegExtension = extension != null
+                && (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg"));
+
+        if (!StringUtils.hasText(extension) || !(pngExtension || jpegExtension)) {
+            throw new FileStorageException(INVALID_IMAGE_FORMAT);
+        }
+
         String contentType = file.getContentType();
         if (contentType == null
                 || !(contentType.equals(IMAGE_PNG)
                 || contentType.equals(IMAGE_JPEG))) {
 
+            throw new FileStorageException(INVALID_IMAGE_FORMAT);
+        }
+
+        if ((pngExtension && !IMAGE_PNG.equals(contentType))
+                || (jpegExtension && !IMAGE_JPEG.equals(contentType))) {
             throw new FileStorageException(INVALID_IMAGE_FORMAT);
         }
     }

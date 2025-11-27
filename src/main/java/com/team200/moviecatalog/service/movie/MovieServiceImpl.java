@@ -102,6 +102,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MovieFiltersResponseDto getFilters() {
         List<String> categories = Arrays.stream(Category.values())
                 .map(Enum::name)

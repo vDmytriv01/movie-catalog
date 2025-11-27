@@ -6,6 +6,7 @@ import com.team200.moviecatalog.dto.movie.MovieRequestDto;
 import com.team200.moviecatalog.dto.movie.MovieResponseDto;
 import com.team200.moviecatalog.dto.movie.MovieShortResponseDto;
 import com.team200.moviecatalog.model.Country;
+import com.team200.moviecatalog.model.Director;
 import com.team200.moviecatalog.model.Genre;
 import com.team200.moviecatalog.model.Movie;
 import java.util.Set;
@@ -34,12 +35,14 @@ public interface MovieMapper {
 
     @Mapping(target = "countries", source = "countryIds", qualifiedByName = "toCountries")
     @Mapping(target = "genres", source = "genreIds", qualifiedByName = "toGenres")
+    @Mapping(target = "directors", source = "directorIds", qualifiedByName = "toDirectors")
     @Mapping(target = "averageRating", source = "averageRating")
     Movie toEntity(MovieRequestDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "countries", source = "countryIds", qualifiedByName = "toCountries")
     @Mapping(target = "genres", source = "genreIds", qualifiedByName = "toGenres")
+    @Mapping(target = "directors", source = "directorIds", qualifiedByName = "toDirectors")
     void updateMovieFromDto(MovieRequestDto dto, @MappingTarget Movie movie);
 
     @Named("entityNames")
@@ -82,5 +85,17 @@ public interface MovieMapper {
             return Set.of();
         }
         return ids.stream().map(id -> new Genre(id, null)).collect(Collectors.toSet());
+    }
+
+    @Named("toDirectors")
+    default Set<Director> toDirectors(Set<Long> ids) {
+        if (ids == null) {
+            return Set.of();
+        }
+        return ids.stream().map(id -> {
+            Director director = new Director();
+            director.setId(id);
+            return director;
+        }).collect(Collectors.toSet());
     }
 }

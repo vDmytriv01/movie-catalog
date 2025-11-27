@@ -13,8 +13,7 @@ import com.team200.moviecatalog.repository.movie.MovieRepository;
 import com.team200.moviecatalog.repository.rating.RatingRepository;
 import com.team200.moviecatalog.repository.review.ReviewRepository;
 import com.team200.moviecatalog.repository.user.UserRepository;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import com.team200.moviecatalog.service.rating.MovieRatingUpdater;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +35,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
     private final FeedbackMapper feedbackMapper;
+    private final MovieRatingUpdater movieRatingUpdater;
 
     @Override
     @Transactional(readOnly = true)
@@ -96,7 +96,7 @@ public class FeedbackServiceImpl implements FeedbackService {
             rating.setValue(dto.ratingValue());
             ratingRepository.save(rating);
 
-            updateMovieAverageRating(movie);
+            movieRatingUpdater.recalculateAndSaveAverage(movie);
         }
 
         Integer finalRating = ratingRepository.findValueByMovieAndUser(
@@ -105,16 +105,5 @@ public class FeedbackServiceImpl implements FeedbackService {
                 movieId, author.getId()).orElse(null);
 
         return feedbackMapper.toDto(finalReview, finalRating);
-    }
-
-    private void updateMovieAverageRating(Movie movie) {
-        List<Integer> ratings = ratingRepository.findAllValuesByMovieId(movie.getId());
-        if (ratings.isEmpty()) {
-            movie.setAverageRating(BigDecimal.ZERO);
-        } else {
-            double avg = ratings.stream().mapToInt(Integer::intValue).average().orElse(0);
-            movie.setAverageRating(BigDecimal.valueOf(avg).setScale(1, RoundingMode.HALF_UP));
-        }
-        movieRepository.save(movie);
     }
 }

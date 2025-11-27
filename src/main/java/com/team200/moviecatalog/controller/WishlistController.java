@@ -2,11 +2,13 @@ package com.team200.moviecatalog.controller;
 
 import com.team200.moviecatalog.dto.wishlist.WishlistResponseDto;
 import com.team200.moviecatalog.service.wishlist.WishlistService;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/wishlist")
 @RequiredArgsConstructor
+@Validated
 public class WishlistController {
 
     private final WishlistService wishlistService;
@@ -31,7 +34,7 @@ public class WishlistController {
     @PostMapping("/items/{movieId}")
     @ResponseStatus(HttpStatus.CREATED)
     public WishlistResponseDto addItem(
-            @PathVariable Long movieId,
+            @PathVariable @Positive Long movieId,
             @AuthenticationPrincipal UserDetails user
     ) {
         return wishlistService.add(user.getUsername(), movieId);
@@ -41,7 +44,7 @@ public class WishlistController {
     @DeleteMapping("/items/{movieId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeItem(
-            @PathVariable Long movieId,
+            @PathVariable @Positive Long movieId,
             @AuthenticationPrincipal UserDetails user
     ) {
         wishlistService.remove(user.getUsername(), movieId);

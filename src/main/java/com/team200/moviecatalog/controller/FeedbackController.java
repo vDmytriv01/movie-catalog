@@ -4,12 +4,14 @@ import com.team200.moviecatalog.dto.feedback.FeedbackRequestDto;
 import com.team200.moviecatalog.dto.feedback.FeedbackResponseDto;
 import com.team200.moviecatalog.service.feedback.FeedbackService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,13 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/movies/{movieId}/feedback")
 @RequiredArgsConstructor
+@Validated
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<FeedbackResponseDto> getFeedbackByMovie(@PathVariable Long movieId) {
+    public List<FeedbackResponseDto> getFeedbackByMovie(
+            @PathVariable @Positive Long movieId) {
         return feedbackService.getFeedbackByMovie(movieId);
     }
 
@@ -35,7 +39,7 @@ public class FeedbackController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public FeedbackResponseDto addOrUpdateFeedback(
-            @PathVariable Long movieId,
+            @PathVariable @Positive Long movieId,
             @Valid @RequestBody FeedbackRequestDto dto,
             @AuthenticationPrincipal UserDetails user
     ) {

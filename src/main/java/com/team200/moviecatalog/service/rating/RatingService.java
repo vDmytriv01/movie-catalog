@@ -10,8 +10,6 @@ import com.team200.moviecatalog.model.User;
 import com.team200.moviecatalog.repository.movie.MovieRepository;
 import com.team200.moviecatalog.repository.rating.RatingRepository;
 import com.team200.moviecatalog.repository.user.UserRepository;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -28,6 +26,7 @@ public class RatingService {
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
     private final RatingMapper ratingMapper;
+    private final MovieRatingUpdater movieRatingUpdater;
 
     @Transactional
     public RatingResponseDto addOrUpdateRating(RatingRequestDto dto, UserDetails userDetails) {
@@ -53,26 +52,8 @@ public class RatingService {
 
         Rating saved = ratingRepository.save(rating);
 
-        updateMovieAverageRating(movie);
+        movieRatingUpdater.recalculateAndSaveAverage(movie);
 
         return ratingMapper.toDto(saved);
-    }
-
-    private void updateMovieAverageRating(Movie movie) {
-        var ratings = ratingRepository.findAllByMovieId(movie.getId());
-
-        if (ratings.isEmpty()) {
-            movie.setAverageRating(BigDecimal.ZERO);
-        } else {
-            double avg = ratings.stream()
-                    .mapToInt(Rating::getValue)
-                    .average()
-                    .orElse(0.0);
-
-            movie.setAverageRating(
-                    BigDecimal.valueOf(avg).setScale(2, RoundingMode.HALF_UP)
-            );
-        }
-        movieRepository.save(movie);
     }
 }

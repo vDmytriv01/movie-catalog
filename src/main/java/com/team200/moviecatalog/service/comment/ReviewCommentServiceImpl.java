@@ -52,6 +52,7 @@ public class ReviewCommentServiceImpl implements ReviewCommentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ReviewCommentResponseDto> getCommentsByReview(Long reviewId) {
         return commentRepository.findByReviewId(reviewId)
                 .stream()
