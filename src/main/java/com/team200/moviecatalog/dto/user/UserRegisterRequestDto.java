@@ -1,26 +1,26 @@
 package com.team200.moviecatalog.dto.user;
 
+import com.team200.moviecatalog.constants.ValidationMessages;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 public record UserRegisterRequestDto(
-        @NotBlank(message = "Email is required")
-        @Email(message = "Email must be valid")
+        @NotBlank(message = ValidationMessages.EMAIL_REQUIRED)
+        @Email(message = ValidationMessages.EMAIL_INVALID)
         String email,
 
-        @NotBlank(message = "Nickname is required")
+        @NotBlank(message = ValidationMessages.NICKNAME_REQUIRED)
         String nickname,
 
-        @NotBlank(message = "Password is required")
+        @NotBlank(message = ValidationMessages.PASSWORD_REQUIRED)
         @Pattern(
                 regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{8,64}$",
-                message = "Password must contain at least one letter, "
-                        + "one number, no spaces, and be 8–64 chars long"
+                message = ValidationMessages.PASSWORD_PATTERN
         )
         String password,
 
-        @NotBlank(message = "Repeat password is required")
+        @NotBlank(message = ValidationMessages.REPEAT_PASSWORD_REQUIRED)
         String repeatPassword
 ) {
 }

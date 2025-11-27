@@ -1,5 +1,6 @@
 package com.team200.moviecatalog.controller;
 
+import com.team200.moviecatalog.dto.response.ApiMessageResponse;
 import com.team200.moviecatalog.dto.user.PasswordResetConfirmDto;
 import com.team200.moviecatalog.dto.user.PasswordResetRequestDto;
 import com.team200.moviecatalog.dto.user.UserLoginRequestDto;
@@ -13,6 +14,7 @@ import com.team200.moviecatalog.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,13 +40,17 @@ public class AuthenticationController {
     }
 
     @GetMapping("/verify-email")
-    public String verifyEmail(@RequestParam String token) {
-        return emailVerificationService.verify(token);
+    public ResponseEntity<ApiMessageResponse> verifyEmail(@RequestParam String token) {
+        return ResponseEntity.ok(
+                new ApiMessageResponse(emailVerificationService.verify(token))
+        );
     }
 
     @PostMapping("/resend-verification")
-    public String resendVerification(@RequestParam String email) {
-        return emailVerificationService.resend(email);
+    public ResponseEntity<ApiMessageResponse> resendVerification(@RequestParam String email) {
+        return ResponseEntity.ok(
+                new ApiMessageResponse(emailVerificationService.resend(email))
+        );
     }
 
     @PostMapping("/password/reset-request")
@@ -55,9 +61,10 @@ public class AuthenticationController {
 
     @PostMapping("/password/reset")
     @ResponseStatus(HttpStatus.OK)
-    public String resetPassword(@RequestBody @Valid PasswordResetConfirmDto dto) {
+    public ResponseEntity<ApiMessageResponse> resetPassword(
+            @RequestBody @Valid PasswordResetConfirmDto dto) {
         passwordResetService.resetPassword(dto.token(), dto.newPassword());
-        return "Password successfully reset.";
+        return ResponseEntity.ok(new ApiMessageResponse("Password successfully reset."));
     }
 
     @PostMapping("/login")

@@ -1,7 +1,6 @@
 package com.team200.moviecatalog.config;
 
 import com.team200.moviecatalog.security.CustomAccessDeniedHandler;
-import com.team200.moviecatalog.security.CustomAuthenticationFailureHandler;
 import com.team200.moviecatalog.security.JwtAuthenticationEntryPoint;
 import com.team200.moviecatalog.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
-    private final CustomAuthenticationFailureHandler authenticationFailureHandler; // <── додано
 
     @Bean
     public PasswordEncoder passwordEncoder() {

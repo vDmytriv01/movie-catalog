@@ -1,5 +1,7 @@
 package com.team200.moviecatalog.service.uploads;
 
+import static com.team200.moviecatalog.constants.Paths.AVATARS_DIR;
+import static com.team200.moviecatalog.constants.Paths.AVATARS_URL_PREFIX;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 
 import com.team200.moviecatalog.exception.FileStorageException;
@@ -15,8 +17,13 @@ public class FileStorageService {
 
     public static final String INIT_ERROR = "Could not initialize folder for upload";
     public static final String SAVE_ERROR = "Could not save avatar";
+    private static final String INVALID_IMAGE_FORMAT =
+            "Invalid image format. Allowed: png, jpg, jpeg";
+    private static final String EMPTY_FILE_ERROR = "File is empty";
+    private static final String IMAGE_PNG = "image/png";
+    private static final String IMAGE_JPEG = "image/jpeg";
 
-    private final Path root = Paths.get("uploads/avatars");
+    private final Path root = Paths.get(AVATARS_DIR);
 
     public FileStorageService() {
         try {
@@ -36,7 +43,7 @@ public class FileStorageService {
             Path filePath = root.resolve(filename);
             Files.write(filePath, file.getBytes());
 
-            return "/uploads/avatars/" + filename;
+            return AVATARS_URL_PREFIX + filename;
 
         } catch (IOException e) {
             throw new FileStorageException(SAVE_ERROR, e);
@@ -45,16 +52,15 @@ public class FileStorageService {
 
     private void validateFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new FileStorageException("File is empty");
+            throw new FileStorageException(EMPTY_FILE_ERROR);
         }
 
         String contentType = file.getContentType();
         if (contentType == null
-                || !(contentType.equals("image/png")
-                        || contentType.equals("image/jpeg"))) {
+                || !(contentType.equals(IMAGE_PNG)
+                || contentType.equals(IMAGE_JPEG))) {
 
-            throw new FileStorageException("Invalid image format. Allowed: png, jpg, jpeg");
+            throw new FileStorageException(INVALID_IMAGE_FORMAT);
         }
     }
-
 }

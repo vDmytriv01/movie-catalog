@@ -1,20 +1,25 @@
 package com.team200.moviecatalog.exception;
 
+import com.team200.moviecatalog.constants.ErrorMessages;
+import io.jsonwebtoken.JwtException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.io.IOException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
@@ -27,26 +32,29 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
             HttpStatusCode status,
             WebRequest request
     ) {
-        Map<String, Object> body = baseBody(status.value(), "VALIDATION_ERROR");
-        body.put("message", "Invalid input data");
+        String message = extractFirstValidationMessage(ex);
 
-        Map<String, String> details = new LinkedHashMap<>();
+        return buildError(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", message);
+    }
 
+    private String extractFirstValidationMessage(MethodArgumentNotValidException ex) {
         for (ObjectError error : ex.getBindingResult().getAllErrors()) {
             if (error instanceof FieldError fieldError) {
-                details.put(fieldError.getField(), fieldError.getDefaultMessage());
-            } else {
-                details.put(error.getObjectName(), error.getDefaultMessage());
+                return fieldError.getDefaultMessage();
             }
+            return error.getDefaultMessage();
         }
-
-        body.put("details", details);
-
-        return new ResponseEntity<>(body, headers, status);
+        return "Invalid input data";
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handleNotFound(EntityNotFoundException ex) {
+        return buildError(HttpStatus.NOT_FOUND, "NOT_FOUND", ex.getMessage());
+    }
+
+    @ExceptionHandler(com.team200.moviecatalog.exception.EntityNotFoundException.class)
+    public ResponseEntity<Object> handleCustomNotFound(
+            com.team200.moviecatalog.exception.EntityNotFoundException ex) {
         return buildError(HttpStatus.NOT_FOUND, "NOT_FOUND", ex.getMessage());
     }
 
@@ -67,44 +75,84 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 
     @ExceptionHandler(FileStorageException.class)
     public ResponseEntity<Object> handleFileStorage(FileStorageException ex) {
-        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_STORAGE_ERROR", ex.getMessage());
+        HttpStatus status = ex.getCause() instanceof IOException
+                ? HttpStatus.INTERNAL_SERVER_ERROR
+                : HttpStatus.BAD_REQUEST;
+
+        return buildError(status, "FILE_STORAGE_ERROR", ex.getMessage());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex) {
-        return buildError(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", ex.getMessage());
+        String message = ex.getConstraintViolations()
+                .stream()
+                .findFirst()
+                .map(v -> v.getMessage())
+                .orElse("Invalid input");
+
+        return buildError(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", message);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDataIntegrity(DataIntegrityViolationException ex) {
-        String rootMessage = ex.getMostSpecificCause().getMessage();
-        return buildError(HttpStatus.BAD_REQUEST, "DATA_INTEGRITY_ERROR", rootMessage);
+        return buildError(
+                HttpStatus.CONFLICT,
+                "DATA_INTEGRITY_ERROR",
+                ErrorMessages.DATA_INTEGRITY_VIOLATION
+        );
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<Object> handleJwt(JwtException ex) {
+        return buildError(HttpStatus.UNAUTHORIZED,
+                "INVALID_TOKEN",
+                ErrorMessages.INVALID_AUTH_TOKEN);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Object> handleAuthentication(AuthenticationException ex) {
+        return buildError(HttpStatus.UNAUTHORIZED,
+                "INVALID_CREDENTIALS",
+                ErrorMessages.INVALID_EMAIL_OR_PASSWORD);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGeneral(Exception ex) {
-        return buildError(
-                HttpStatus.INTERNAL_SERVER_ERROR,
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR,
                 "INTERNAL_ERROR",
-                "Internal server error"
-        );
+                ErrorMessages.INTERNAL_SERVER_ERROR);
     }
 
-    private ResponseEntity<Object> buildError(
-            HttpStatus status,
-            String errorCode,
-            String message
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request
     ) {
-        Map<String, Object> body = baseBody(status.value(), errorCode);
-        body.put("message", message);
-        return new ResponseEntity<>(body, status);
+        return buildError(HttpStatus.BAD_REQUEST,
+                "BAD_REQUEST",
+                ErrorMessages.MALFORMED_JSON);
     }
 
-    private Map<String, Object> baseBody(int status, String errorCode) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", status);
-        body.put("error", errorCode);
-        return body;
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(
+            MissingServletRequestParameterException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request
+    ) {
+        String message = "Required parameter '" + ex.getParameterName() + "' is missing";
+        return buildError(HttpStatus.BAD_REQUEST, "BAD_REQUEST", message);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Object> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String message = "Invalid value for parameter '" + ex.getName() + "'";
+        return buildError(HttpStatus.BAD_REQUEST, "BAD_REQUEST", message);
+    }
+
+    private ResponseEntity<Object> buildError(HttpStatus status, String errorCode, String message) {
+        return new ResponseEntity<>(ErrorResponseFactory.build(status, errorCode, message), status);
     }
 }
