@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-movies-title
+      author: vadym
+      changes:
+        - createIndex:
+            tableName: movies
+            indexName: idx_movies_title
+            columns:
+              - column:
+                  name: title
+
+  - changeSet:
+      id: idx-movies-release_year
+      author: vadym
+      changes:
+        - createIndex:
+            tableName: movies
+            indexName: idx_movies_release_year
+            columns:
+              - column:
+                  name: release_year
+

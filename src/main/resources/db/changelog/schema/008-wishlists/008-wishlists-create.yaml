@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-wishlists-v1
+      author: vadym
+      changes:
+        - createTable:
+            tableName: wishlists
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+

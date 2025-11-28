@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-wishlist_items-wishlist-movie
+      author: vadym
+      changes:
+        - addUniqueConstraint:
+            tableName: wishlist_items
+            columnNames: wishlist_id, movie_id
+            constraintName: uk_wishlist_items_wishlist_movie
+
+  - changeSet:
+      id: idx-wishlist_items-movie_id
+      author: vadym
+      changes:
+        - createIndex:
+            tableName: wishlist_items
+            indexName: idx_wishlist_items_movie_id
+            columns:
+              - column:
+                  name: movie_id
+

@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: fk-wishlist_items-movies
+      author: vadym
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: wishlist_items
+            baseColumnNames: movie_id
+            referencedTableName: movies
+            referencedColumnNames: id
+            constraintName: fk_wishlist_items_movie
+
+  - changeSet:
+      id: fk-wishlist_items-wishlists
+      author: vadym
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: wishlist_items
+            baseColumnNames: wishlist_id
+            referencedTableName: wishlists
+            referencedColumnNames: id
+            constraintName: fk_wishlist_items_wishlist
+

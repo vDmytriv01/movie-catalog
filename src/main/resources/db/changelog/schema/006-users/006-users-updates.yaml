@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-users-v2
+      author: vadym
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: email_verified
+                  type: BIT(1)
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+

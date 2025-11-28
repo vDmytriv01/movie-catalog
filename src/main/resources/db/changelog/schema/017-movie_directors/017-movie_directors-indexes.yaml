@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-movie_directors-director_id
+      author: vadym
+      changes:
+        - createIndex:
+            tableName: movie_directors
+            indexName: idx_movie_directors_director_id
+            columns:
+              - column:
+                  name: director_id
+

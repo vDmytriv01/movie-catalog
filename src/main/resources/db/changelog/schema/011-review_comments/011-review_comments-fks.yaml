@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: fk-review_comments-parent
+      author: vadym
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: review_comments
+            baseColumnNames: parent_comment_id
+            referencedTableName: review_comments
+            referencedColumnNames: id
+            constraintName: fk_review_comments_parent
+
+  - changeSet:
+      id: fk-review_comments-reviews
+      author: vadym
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: review_comments
+            baseColumnNames: review_id
+            referencedTableName: reviews
+            referencedColumnNames: id
+            constraintName: fk_review_comments_review
+
+  - changeSet:
+      id: fk-review_comments-users
+      author: vadym
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: review_comments
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_review_comments_user
+

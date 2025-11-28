@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-email_verification_token-token
+      author: vadym
+      changes:
+        - addUniqueConstraint:
+            tableName: email_verification_token
+            columnNames: token
+            constraintName: uk_email_verification_token_token
+
+  - changeSet:
+      id: idx-email_verification_token-user_id
+      author: vadym
+      changes:
+        - createIndex:
+            tableName: email_verification_token
+            indexName: idx_email_verification_token_user_id
+            columns:
+              - column:
+                  name: user_id
+

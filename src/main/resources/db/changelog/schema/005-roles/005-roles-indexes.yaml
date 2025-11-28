@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-roles-name
+      author: vadym
+      changes:
+        - addUniqueConstraint:
+            tableName: roles
+            columnNames: name
+            constraintName: uk_roles_name
+

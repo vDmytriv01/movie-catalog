@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-ratings-movie-user
+      author: vadym
+      changes:
+        - addUniqueConstraint:
+            tableName: ratings
+            columnNames: movie_id, user_id
+            constraintName: uk_ratings_movie_user
+
+  - changeSet:
+      id: idx-ratings-movie_id
+      author: vadym
+      changes:
+        - createIndex:
+            tableName: ratings
+            indexName: idx_ratings_movie_id
+            columns:
+              - column:
+                  name: movie_id
+
+  - changeSet:
+      id: idx-ratings-user_id
+      author: vadym
+      changes:
+        - createIndex:
+            tableName: ratings
+            indexName: idx_ratings_user_id
+            columns:
+              - column:
+                  name: user_id
+

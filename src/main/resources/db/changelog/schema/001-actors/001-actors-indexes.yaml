@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-actors-full_name
+      author: vadym
+      changes:
+        - addUniqueConstraint:
+            tableName: actors
+            columnNames: full_name
+            constraintName: uk_actors_full_name
+

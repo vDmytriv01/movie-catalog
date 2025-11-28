@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-review_comments-review_id
+      author: vadym
+      changes:
+        - createIndex:
+            tableName: review_comments
+            indexName: idx_review_comments_review_id
+            columns:
+              - column:
+                  name: review_id
+
+  - changeSet:
+      id: idx-review_comments-user_id
+      author: vadym
+      changes:
+        - createIndex:
+            tableName: review_comments
+            indexName: idx_review_comments_user_id
+            columns:
+              - column:
+                  name: user_id
+
+  - changeSet:
+      id: idx-review_comments-parent_comment_id
+      author: vadym
+      changes:
+        - createIndex:
+            tableName: review_comments
+            indexName: idx_review_comments_parent_comment_id
+            columns:
+              - column:
+                  name: parent_comment_id
+

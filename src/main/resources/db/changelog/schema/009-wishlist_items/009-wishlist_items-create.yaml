@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-wishlist_items-v1
+      author: vadym
+      changes:
+        - createTable:
+            tableName: wishlist_items
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: wishlist_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: movie_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+

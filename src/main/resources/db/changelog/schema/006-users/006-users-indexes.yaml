@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-users-email
+      author: vadym
+      changes:
+        - addUniqueConstraint:
+            tableName: users
+            columnNames: email
+            constraintName: uk_users_email
+
+  - changeSet:
+      id: idx-users-nickname
+      author: vadym
+      changes:
+        - addUniqueConstraint:
+            tableName: users
+            columnNames: nickname
+            constraintName: uk_users_nickname
+

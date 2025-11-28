@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-directors-v1
+      author: vadym
+      changes:
+        - createTable:
+            tableName: directors
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: full_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+

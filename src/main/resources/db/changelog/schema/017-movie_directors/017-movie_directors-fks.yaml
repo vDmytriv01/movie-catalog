@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: fk-movie_directors-directors
+      author: vadym
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: movie_directors
+            baseColumnNames: director_id
+            referencedTableName: directors
+            referencedColumnNames: id
+            constraintName: fk_movie_directors_director
+            onDelete: CASCADE
+
+  - changeSet:
+      id: fk-movie_directors-movies
+      author: vadym
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: movie_directors
+            baseColumnNames: movie_id
+            referencedTableName: movies
+            referencedColumnNames: id
+            constraintName: fk_movie_directors_movie
+            onDelete: CASCADE
+

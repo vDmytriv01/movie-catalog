@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: fk-ratings-movies
+      author: vadym
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: ratings
+            baseColumnNames: movie_id
+            referencedTableName: movies
+            referencedColumnNames: id
+            constraintName: fk_ratings_movies
+            onDelete: CASCADE
+
+  - changeSet:
+      id: fk-ratings-users
+      author: vadym
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: ratings
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_ratings_users
+            onDelete: CASCADE
+

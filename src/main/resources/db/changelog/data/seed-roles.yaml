@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: seed-roles-v1
+      author: vadym
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column: { name: id, valueNumeric: 1 }
+              - column: { name: name, value: "ADMIN" }
+        - insert:
+            tableName: roles
+            columns:
+              - column: { name: id, valueNumeric: 2 }
+              - column: { name: name, value: "USER" }

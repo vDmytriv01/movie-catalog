@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-genres-name
+      author: vadym
+      changes:
+        - addUniqueConstraint:
+            tableName: genres
+            columnNames: name
+            constraintName: uk_genres_name
+

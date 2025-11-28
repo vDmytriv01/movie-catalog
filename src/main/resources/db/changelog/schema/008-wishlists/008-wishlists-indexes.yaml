@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-wishlists-user_id
+      author: vadym
+      changes:
+        - addUniqueConstraint:
+            tableName: wishlists
+            columnNames: user_id
+            constraintName: uk_wishlists_user_id
+

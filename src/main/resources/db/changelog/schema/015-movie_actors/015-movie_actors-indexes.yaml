@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-movie_actors-movie-actor
+      author: vadym
+      changes:
+        - addUniqueConstraint:
+            tableName: movie_actors
+            columnNames: movie_id, actor_id
+            constraintName: uk_movie_actors_movie_actor
+
+  - changeSet:
+      id: idx-movie_actors-actor_id
+      author: vadym
+      changes:
+        - createIndex:
+            tableName: movie_actors
+            indexName: idx_movie_actors_actor_id
+            columns:
+              - column:
+                  name: actor_id
+

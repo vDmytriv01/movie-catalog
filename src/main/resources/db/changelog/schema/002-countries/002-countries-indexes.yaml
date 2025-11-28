@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-countries-name
+      author: vadym
+      changes:
+        - addUniqueConstraint:
+            tableName: countries
+            columnNames: name
+            constraintName: uk_countries_name
+
