@@ -1,6 +1,7 @@
 package com.team200.moviecatalog.controller;
 
 import com.team200.moviecatalog.dto.response.ApiMessageResponse;
+import com.team200.moviecatalog.dto.user.GoogleOAuthRequestDto;
 import com.team200.moviecatalog.dto.user.PasswordResetConfirmDto;
 import com.team200.moviecatalog.dto.user.PasswordResetRequestDto;
 import com.team200.moviecatalog.dto.user.UserLoginRequestDto;
@@ -76,5 +77,11 @@ public class AuthenticationController {
     @PostMapping("/login")
     public UserLoginResponseDto login(@Valid @RequestBody UserLoginRequestDto dto) {
         return authenticationService.authenticate(dto);
+    }
+
+    @PostMapping("/google")
+    public UserLoginResponseDto loginWithGoogle(
+            @Valid @RequestBody GoogleOAuthRequestDto dto) {
+        return authenticationService.authenticateWithGoogle(dto.idToken());
     }
 }
