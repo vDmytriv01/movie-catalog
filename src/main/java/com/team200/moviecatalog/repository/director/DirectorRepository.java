@@ -7,5 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DirectorRepository extends JpaRepository<Director, Long> {
+
+    boolean existsByFullNameIgnoreCase(String fullName);
+
     List<Director> findAllByMovies_Id(Long movieId);
 }

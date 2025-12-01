@@ -2,6 +2,7 @@ package com.team200.moviecatalog.service.actor;
 
 import com.team200.moviecatalog.dto.actor.ActorRequestDto;
 import com.team200.moviecatalog.dto.actor.ActorResponseDto;
+import com.team200.moviecatalog.exception.ConflictException;
 import com.team200.moviecatalog.exception.EntityNotFoundException;
 import com.team200.moviecatalog.mapper.ActorMapper;
 import com.team200.moviecatalog.model.Actor;
@@ -16,12 +17,17 @@ import org.springframework.stereotype.Service;
 public class ActorServiceImpl implements ActorService {
 
     private static final String ACTOR_NOT_FOUND = "Actor not found: ";
+    private static final String ACTOR_EXISTS = "Actor already exists: ";
 
     private final ActorRepository actorRepository;
     private final ActorMapper actorMapper;
 
     @Override
     public ActorResponseDto create(ActorRequestDto dto) {
+        if (actorRepository.existsByFullNameIgnoreCase(dto.fullName())) {
+            throw new ConflictException(ACTOR_EXISTS + dto.fullName());
+        }
+
         Actor actor = actorMapper.toEntity(dto);
         return actorMapper.toDto(actorRepository.save(actor));
     }
@@ -43,6 +49,11 @@ public class ActorServiceImpl implements ActorService {
     public ActorResponseDto update(Long id, ActorRequestDto dto) {
         Actor actor = actorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ACTOR_NOT_FOUND + id));
+
+        if (!actor.getFullName().equalsIgnoreCase(dto.fullName())
+                && actorRepository.existsByFullNameIgnoreCase(dto.fullName())) {
+            throw new ConflictException(ACTOR_EXISTS + dto.fullName());
+        }
 
         actor.setFullName(dto.fullName());
         return actorMapper.toDto(actorRepository.save(actor));
