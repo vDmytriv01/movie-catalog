@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: seed-users-v1
+      author: vadym
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, valueNumeric: 1 }
+              - column: { name: email, value: "admin@mail.com" }
+              - column: { name: nickname, value: "admin" }
+              - column: { name: password, value: "$2a$10$V.x6hrUbrvy3qIyX7E8Pru4ymNk1CBMpBj4FwX7KXL4YWoaRD.SXO" }
+              - column: { name: first_name, value: "Admin" }
+              - column: { name: last_name, value: "Admin" }
+              - column: { name: email_verified, valueBoolean: true }
+              - column: { name: deleted, valueBoolean: false }
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, valueNumeric: 2 }
+              - column: { name: email, value: "user@mail.com" }
+              - column: { name: nickname, value: "user" }
+              - column: { name: password, value: "$2a$10$V.x6hrUbrvy3qIyX7E8Pru4ymNk1CBMpBj4FwX7KXL4YWoaRD.SXO" }
+              - column: { name: first_name, value: "User" }
+              - column: { name: last_name, value: "User" }
+              - column: { name: email_verified, valueBoolean: true }
+              - column: { name: deleted, valueBoolean: false }
