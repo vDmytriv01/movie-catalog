@@ -7,22 +7,28 @@ import com.team200.moviecatalog.dto.movie.MovieResponseDto;
 import com.team200.moviecatalog.dto.movie.MovieSearchParametersDto;
 import com.team200.moviecatalog.dto.movie.MovieShortResponseDto;
 import com.team200.moviecatalog.mapper.MovieMapper;
+import com.team200.moviecatalog.model.Actor;
 import com.team200.moviecatalog.model.AgeRating;
 import com.team200.moviecatalog.model.Category;
 import com.team200.moviecatalog.model.Director;
 import com.team200.moviecatalog.model.Genre;
 import com.team200.moviecatalog.model.Movie;
+import com.team200.moviecatalog.model.MovieActor;
 import com.team200.moviecatalog.model.Season;
+import com.team200.moviecatalog.repository.actor.ActorRepository;
 import com.team200.moviecatalog.repository.director.DirectorRepository;
 import com.team200.moviecatalog.repository.genre.GenreRepository;
 import com.team200.moviecatalog.repository.movie.MovieRepository;
 import com.team200.moviecatalog.repository.movie.MovieSpecificationBuilder;
+import com.team200.moviecatalog.repository.movieactor.MovieActorRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -42,6 +48,8 @@ public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
     private final DirectorRepository directorRepository;
+    private final ActorRepository actorRepository;
+    private final MovieActorRepository movieActorRepository;
     private final MovieMapper movieMapper;
     private final MovieSpecificationBuilder movieSpecificationBuilder;
 
@@ -51,6 +59,7 @@ public class MovieServiceImpl implements MovieService {
         Movie movie = movieMapper.toEntity(dto);
         enrichMovieWithDateData(movie);
         movieRepository.save(movie);
+        updateMovieActors(movie, dto.actorIds());
         return movieMapper.toResponseDto(movie);
     }
 
@@ -62,6 +71,7 @@ public class MovieServiceImpl implements MovieService {
         movieMapper.updateMovieFromDto(dto, movie);
         enrichMovieWithDateData(movie);
         movieRepository.save(movie);
+        updateMovieActors(movie, dto.actorIds());
         return movieMapper.toResponseDto(movie);
     }
 
@@ -108,8 +118,8 @@ public class MovieServiceImpl implements MovieService {
                 .map(Enum::name)
                 .toList();
 
-        List<String> ageRatings = Arrays.stream(AgeRating.values())
-                .map(ar -> ar.getValue() + "+")
+        List<String> ageRating = Arrays.stream(AgeRating.values())
+                .map(Enum::name)
                 .toList();
 
         List<String> genres = genreRepository.findAll()
@@ -128,7 +138,7 @@ public class MovieServiceImpl implements MovieService {
                 .boxed()
                 .toList();
 
-        return new MovieFiltersResponseDto(categories, genres, ageRatings, years, ratingValues);
+        return new MovieFiltersResponseDto(categories, genres, ageRating, years, ratingValues);
     }
 
     @Override
@@ -156,10 +166,37 @@ public class MovieServiceImpl implements MovieService {
         return movieRepository.findAll().stream()
                 .filter(m -> !m.getId().equals(movieId))
                 .filter(m -> m.getGenres().stream().anyMatch(g -> genreIds.contains(g.getId())))
-                .sorted(Comparator.comparing(Movie::getAverageRating).reversed())
+                .sorted(Comparator.comparing(
+                        (Movie m) -> Optional.ofNullable(m.getAverageRating())
+                                .orElse(BigDecimal.ZERO))
+                        .reversed())
                 .limit(10)
                 .map(movieMapper::toShortDto)
                 .toList();
+    }
+
+    private void updateMovieActors(Movie movie, Set<Long> actorIds) {
+        if (actorIds == null) {
+            return;
+        }
+
+        List<Actor> actors = actorRepository.findAllById(actorIds);
+        if (actors.size() != actorIds.size()) {
+            throw new com.team200.moviecatalog.exception.EntityNotFoundException("Actor not found");
+        }
+
+        List<MovieActor> existing = movieActorRepository.findAllByMovieId(movie.getId());
+        if (!existing.isEmpty()) {
+            movieActorRepository.deleteAll(existing);
+        }
+
+        List<MovieActor> movieActors = actors.stream()
+                .map(actor -> MovieActor.builder()
+                        .movie(movie)
+                        .actor(actor)
+                        .build())
+                .toList();
+        movieActorRepository.saveAll(movieActors);
     }
 
     private void enrichMovieWithDateData(Movie movie) {

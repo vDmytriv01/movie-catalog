@@ -36,7 +36,6 @@ public interface MovieMapper {
     @Mapping(target = "countries", source = "countryIds", qualifiedByName = "toCountries")
     @Mapping(target = "genres", source = "genreIds", qualifiedByName = "toGenres")
     @Mapping(target = "directors", source = "directorIds", qualifiedByName = "toDirectors")
-    @Mapping(target = "averageRating", source = "averageRating")
     Movie toEntity(MovieRequestDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

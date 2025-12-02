@@ -5,7 +5,7 @@ import java.util.List;
 public record MovieFiltersResponseDto(
         List<String> categories,
         List<String> genres,
-        List<String> ageRatings,
+        List<String> ageRating,
         List<Integer> years,
         List<Double> ratingValues
 ) {
