@@ -38,7 +38,7 @@ public class FeedbackController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FeedbackResponseDto addOrUpdateFeedback(
+    public FeedbackResponseDto addFeedback(
             @PathVariable @Positive Long movieId,
             @Valid @RequestBody FeedbackRequestDto dto,
             @AuthenticationPrincipal UserDetails user

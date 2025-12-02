@@ -2,6 +2,7 @@ package com.team200.moviecatalog.service.rating;
 
 import com.team200.moviecatalog.dto.rating.RatingRequestDto;
 import com.team200.moviecatalog.dto.rating.RatingResponseDto;
+import com.team200.moviecatalog.exception.ConflictException;
 import com.team200.moviecatalog.exception.EntityNotFoundException;
 import com.team200.moviecatalog.mapper.RatingMapper;
 import com.team200.moviecatalog.model.Movie;
@@ -21,6 +22,8 @@ public class RatingService {
 
     private static final String USER_NOT_FOUND = "User not found: ";
     private static final String MOVIE_NOT_FOUND = "Movie not found: ";
+    private static final String RATING_NOT_FOUND = "Rating not found for movie: ";
+    private static final String DUPLICATE_RATING = "Rating already exists for this movie";
 
     private final RatingRepository ratingRepository;
     private final MovieRepository movieRepository;
@@ -29,7 +32,7 @@ public class RatingService {
     private final MovieRatingUpdater movieRatingUpdater;
 
     @Transactional
-    public RatingResponseDto addOrUpdateRating(RatingRequestDto dto, UserDetails userDetails) {
+    public RatingResponseDto createRating(RatingRequestDto dto, UserDetails userDetails) {
         User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() ->
                         new EntityNotFoundException(USER_NOT_FOUND + userDetails.getUsername()));
@@ -38,22 +41,30 @@ public class RatingService {
                 .orElseThrow(() ->
                         new EntityNotFoundException(MOVIE_NOT_FOUND + dto.movieId()));
 
-        Rating rating = ratingRepository.findByUserIdAndMovieId(user.getId(), movie.getId())
-                .map(existing -> {
-                    existing.setValue(dto.value());
-                    return existing;
-                })
-                .orElseGet(() -> {
-                    Rating newRating = ratingMapper.toEntity(dto);
-                    newRating.setUser(user);
-                    newRating.setMovie(movie);
-                    return newRating;
-                });
+        if (ratingRepository.findByUserIdAndMovieId(user.getId(), movie.getId()).isPresent()) {
+            throw new ConflictException(DUPLICATE_RATING);
+        }
+
+        Rating rating = ratingMapper.toEntity(dto);
+        rating.setUser(user);
+        rating.setMovie(movie);
 
         Rating saved = ratingRepository.save(rating);
 
         movieRatingUpdater.recalculateAndSaveAverage(movie);
 
         return ratingMapper.toDto(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public RatingResponseDto getRating(Long movieId, UserDetails userDetails) {
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() ->
+                        new EntityNotFoundException(USER_NOT_FOUND + userDetails.getUsername()));
+
+        Rating rating = ratingRepository.findByUserIdAndMovieId(user.getId(), movieId)
+                .orElseThrow(() -> new EntityNotFoundException(RATING_NOT_FOUND + movieId));
+
+        return ratingMapper.toDto(rating);
     }
 }

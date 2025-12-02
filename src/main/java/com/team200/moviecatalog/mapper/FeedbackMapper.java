@@ -7,11 +7,11 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface FeedbackMapper {
-    @Mapping(target = "id", source = "review.id")
+    @Mapping(target = "reviewId", source = "review.id")
+    @Mapping(target = "movieId", source = "review.movie.id")
     @Mapping(target = "nickname", source = "review.user.nickname")
     @Mapping(target = "createdAt", source = "review.createdAt")
     @Mapping(target = "comment", source = "review.comment")
     @Mapping(target = "rating", source = "rating")
-    @Mapping(target = "type", expression = "java(rating != null ? \"REVIEW_RATING\" : \"REVIEW\")")
     FeedbackResponseDto toDto(Review review, Integer rating);
 }

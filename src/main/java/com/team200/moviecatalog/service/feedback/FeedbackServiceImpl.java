@@ -27,8 +27,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     private static final String USER_NOT_FOUND = "User not found: ";
     private static final String MOVIE_NOT_FOUND = "Movie not found: ";
-    private static final String DUPLICATE_REVIEW = "Review already exists for this movie";
-    private static final String DUPLICATE_RATING = "Rating already exists for this movie";
+    private static final String FEEDBACK_EXISTS = "You already left feedback for this movie";
 
     private final ReviewRepository reviewRepository;
     private final RatingRepository ratingRepository;
@@ -67,43 +66,27 @@ public class FeedbackServiceImpl implements FeedbackService {
                 .orElseThrow(() ->
                         new EntityNotFoundException(MOVIE_NOT_FOUND + movieId));
 
-        Review existingReview = reviewRepository
-                .findByMovieIdAndUserId(movieId, author.getId())
-                .orElse(null);
-
-        Integer existingRating = ratingRepository
-                .findValueByMovieAndUser(movieId, author.getId());
-
-        if (dto.reviewText() != null) {
-            if (existingReview != null && existingReview.getComment() != null) {
-                throw new ConflictException(DUPLICATE_REVIEW);
-            }
-            Review review = existingReview != null ? existingReview : new Review();
-            review.setMovie(movie);
-            review.setUser(author);
-            review.setComment(dto.reviewText());
-            review.setCreatedAt(LocalDateTime.now());
-            reviewRepository.save(review);
+        if (reviewRepository.existsByMovieIdAndUserId(movie.getId(), author.getId())
+                || ratingRepository.findByUserIdAndMovieId(
+                author.getId(), movie.getId()).isPresent()) {
+            throw new ConflictException(FEEDBACK_EXISTS);
         }
 
-        if (dto.ratingValue() != null) {
-            if (existingRating != null) {
-                throw new ConflictException(DUPLICATE_RATING);
-            }
-            Rating rating = new Rating();
-            rating.setMovie(movie);
-            rating.setUser(author);
-            rating.setValue(dto.ratingValue());
-            ratingRepository.save(rating);
+        Review review = new Review();
+        review.setMovie(movie);
+        review.setUser(author);
+        review.setComment(dto.reviewText());
+        review.setCreatedAt(LocalDateTime.now());
+        reviewRepository.save(review);
 
-            movieRatingUpdater.recalculateAndSaveAverage(movie);
-        }
+        Rating rating = new Rating();
+        rating.setMovie(movie);
+        rating.setUser(author);
+        rating.setValue(dto.ratingValue());
+        ratingRepository.save(rating);
 
-        Integer finalRating = ratingRepository.findValueByMovieAndUser(
-                movieId, author.getId());
-        Review finalReview = reviewRepository.findByMovieIdAndUserId(
-                movieId, author.getId()).orElse(null);
+        movieRatingUpdater.recalculateAndSaveAverage(movie);
 
-        return feedbackMapper.toDto(finalReview, finalRating);
+        return feedbackMapper.toDto(review, rating.getValue());
     }
 }
