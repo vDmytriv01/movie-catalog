@@ -7,20 +7,16 @@ import com.team200.moviecatalog.dto.movie.MovieResponseDto;
 import com.team200.moviecatalog.dto.movie.MovieSearchParametersDto;
 import com.team200.moviecatalog.dto.movie.MovieShortResponseDto;
 import com.team200.moviecatalog.mapper.MovieMapper;
-import com.team200.moviecatalog.model.Actor;
 import com.team200.moviecatalog.model.AgeRating;
 import com.team200.moviecatalog.model.Category;
 import com.team200.moviecatalog.model.Director;
 import com.team200.moviecatalog.model.Genre;
 import com.team200.moviecatalog.model.Movie;
-import com.team200.moviecatalog.model.MovieActor;
 import com.team200.moviecatalog.model.Season;
-import com.team200.moviecatalog.repository.actor.ActorRepository;
 import com.team200.moviecatalog.repository.director.DirectorRepository;
 import com.team200.moviecatalog.repository.genre.GenreRepository;
 import com.team200.moviecatalog.repository.movie.MovieRepository;
 import com.team200.moviecatalog.repository.movie.MovieSpecificationBuilder;
-import com.team200.moviecatalog.repository.movieactor.MovieActorRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -48,8 +44,6 @@ public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
     private final DirectorRepository directorRepository;
-    private final ActorRepository actorRepository;
-    private final MovieActorRepository movieActorRepository;
     private final MovieMapper movieMapper;
     private final MovieSpecificationBuilder movieSpecificationBuilder;
 
@@ -59,7 +53,6 @@ public class MovieServiceImpl implements MovieService {
         Movie movie = movieMapper.toEntity(dto);
         enrichMovieWithDateData(movie);
         movieRepository.save(movie);
-        updateMovieActors(movie, dto.actorIds());
         return movieMapper.toResponseDto(movie);
     }
 
@@ -71,7 +64,6 @@ public class MovieServiceImpl implements MovieService {
         movieMapper.updateMovieFromDto(dto, movie);
         enrichMovieWithDateData(movie);
         movieRepository.save(movie);
-        updateMovieActors(movie, dto.actorIds());
         return movieMapper.toResponseDto(movie);
     }
 
@@ -96,7 +88,6 @@ public class MovieServiceImpl implements MovieService {
     public MovieFullResponseDto getFullById(Long id) {
         Movie movie = movieRepository.findByIdWithAll(id)
                 .orElseThrow(() -> new EntityNotFoundException(MOVIE_NOT_FOUND + id));
-
         Set<String> directors = directorRepository.findAllByMovies_Id(id).stream()
                 .map(Director::getFullName)
                 .collect(Collectors.toSet());
@@ -173,30 +164,6 @@ public class MovieServiceImpl implements MovieService {
                 .limit(10)
                 .map(movieMapper::toShortDto)
                 .toList();
-    }
-
-    private void updateMovieActors(Movie movie, Set<Long> actorIds) {
-        if (actorIds == null) {
-            return;
-        }
-
-        List<Actor> actors = actorRepository.findAllById(actorIds);
-        if (actors.size() != actorIds.size()) {
-            throw new com.team200.moviecatalog.exception.EntityNotFoundException("Actor not found");
-        }
-
-        List<MovieActor> existing = movieActorRepository.findAllByMovieId(movie.getId());
-        if (!existing.isEmpty()) {
-            movieActorRepository.deleteAll(existing);
-        }
-
-        List<MovieActor> movieActors = actors.stream()
-                .map(actor -> MovieActor.builder()
-                        .movie(movie)
-                        .actor(actor)
-                        .build())
-                .toList();
-        movieActorRepository.saveAll(movieActors);
     }
 
     private void enrichMovieWithDateData(Movie movie) {
