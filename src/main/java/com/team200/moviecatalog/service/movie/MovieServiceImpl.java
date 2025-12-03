@@ -17,6 +17,7 @@ import com.team200.moviecatalog.repository.director.DirectorRepository;
 import com.team200.moviecatalog.repository.genre.GenreRepository;
 import com.team200.moviecatalog.repository.movie.MovieRepository;
 import com.team200.moviecatalog.repository.movie.MovieSpecificationBuilder;
+import com.team200.moviecatalog.service.movieactor.MovieActorService;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -46,6 +47,7 @@ public class MovieServiceImpl implements MovieService {
     private final DirectorRepository directorRepository;
     private final MovieMapper movieMapper;
     private final MovieSpecificationBuilder movieSpecificationBuilder;
+    private final MovieActorService movieActorService;
 
     @Override
     @Transactional
@@ -53,6 +55,7 @@ public class MovieServiceImpl implements MovieService {
         Movie movie = movieMapper.toEntity(dto);
         enrichMovieWithDateData(movie);
         movieRepository.save(movie);
+        movieActorService.createCast(movie.getId(), dto.actorIds());
         return movieMapper.toResponseDto(movie);
     }
 
@@ -64,6 +67,7 @@ public class MovieServiceImpl implements MovieService {
         movieMapper.updateMovieFromDto(dto, movie);
         enrichMovieWithDateData(movie);
         movieRepository.save(movie);
+        movieActorService.updateCast(movie.getId(), dto.actorIds());
         return movieMapper.toResponseDto(movie);
     }
 
