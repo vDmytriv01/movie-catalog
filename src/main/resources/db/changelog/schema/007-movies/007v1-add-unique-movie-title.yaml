@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: uc-movies-title
+      author: vadym
+      changes:
+        - addUniqueConstraint:
+            tableName: movies
+            columnNames: title
+            constraintName: uc_movies_title_unique

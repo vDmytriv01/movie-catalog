@@ -27,4 +27,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long>,
     Page<Movie> findAllByOrderByAverageRatingDesc(Pageable pageable);
 
     Page<Movie> findAllBySeasonOrderByAverageRatingDesc(Season season, Pageable pageable);
+
+    boolean existsByTitleIgnoreCase(String title);
 }

@@ -41,6 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class MovieServiceImpl implements MovieService {
 
     private static final String MOVIE_NOT_FOUND = "Movie not found: ";
+    private static final String MOVIE_ALREADY_EXISTS =
+            "Movie with title '%s' already exists";
 
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
@@ -52,6 +54,10 @@ public class MovieServiceImpl implements MovieService {
     @Override
     @Transactional
     public MovieResponseDto createMovie(MovieRequestDto dto) {
+        if (movieRepository.existsByTitleIgnoreCase(dto.title())) {
+            throw new IllegalArgumentException(
+                    String.format(MOVIE_ALREADY_EXISTS, dto.title()));
+        }
         Movie movie = movieMapper.toEntity(dto);
         enrichMovieWithDateData(movie);
         movieRepository.save(movie);
@@ -64,6 +70,12 @@ public class MovieServiceImpl implements MovieService {
     public MovieResponseDto updateMovie(Long id, MovieRequestDto dto) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(MOVIE_NOT_FOUND + id));
+        String newTitle = dto.title();
+        if (newTitle != null && !newTitle.equalsIgnoreCase(movie.getTitle())
+                && movieRepository.existsByTitleIgnoreCase(newTitle)) {
+            throw new IllegalArgumentException(
+                    String.format(MOVIE_ALREADY_EXISTS, newTitle));
+        }
         movieMapper.updateMovieFromDto(dto, movie);
         enrichMovieWithDateData(movie);
         movieRepository.save(movie);
