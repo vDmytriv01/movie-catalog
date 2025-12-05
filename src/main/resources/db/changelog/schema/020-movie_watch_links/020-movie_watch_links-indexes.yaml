@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-movie-watch-links-movie-id
+      author: vadym
+      changes:
+        - createIndex:
+            tableName: movie_watch_links
+            indexName: idx_movie_watch_links_movie_id
+            columns:
+              - column:
+                  name: movie_id

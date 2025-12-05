@@ -6,9 +6,12 @@ import com.team200.moviecatalog.dto.movie.MovieRequestDto;
 import com.team200.moviecatalog.dto.movie.MovieResponseDto;
 import com.team200.moviecatalog.dto.movie.MovieSearchParametersDto;
 import com.team200.moviecatalog.dto.movie.MovieShortResponseDto;
+import com.team200.moviecatalog.dto.movie.MovieWatchLinkCreateRequest;
+import com.team200.moviecatalog.dto.movie.MovieWatchLinkDto;
 import com.team200.moviecatalog.dto.movieactor.MovieActorDto;
 import com.team200.moviecatalog.service.movie.MovieService;
 import com.team200.moviecatalog.service.movieactor.MovieActorService;
+import com.team200.moviecatalog.service.moviewatchlink.MovieWatchLinkService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
@@ -36,6 +39,7 @@ public class MovieController {
 
     private final MovieService movieService;
     private final MovieActorService movieActorService;
+    private final MovieWatchLinkService movieWatchLinkService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
@@ -69,6 +73,20 @@ public class MovieController {
     @ResponseStatus(HttpStatus.OK)
     public MovieFullResponseDto getMovieById(@PathVariable @Positive Long id) {
         return movieService.getFullById(id);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{id}/watch-links")
+    @ResponseStatus(HttpStatus.CREATED)
+    public MovieWatchLinkDto addWatchLink(@PathVariable @Positive Long id,
+                                          @Valid @RequestBody MovieWatchLinkCreateRequest request) {
+        return movieWatchLinkService.addWatchLink(id, request);
+    }
+
+    @GetMapping("/{id}/watch-links")
+    @ResponseStatus(HttpStatus.OK)
+    public List<MovieWatchLinkDto> getWatchLinks(@PathVariable @Positive Long id) {
+        return movieWatchLinkService.getWatchLinksForMovie(id);
     }
 
     @GetMapping("/search")

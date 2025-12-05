@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-movie-watch-links-v1
+      author: vadym
+      changes:
+        - createTable:
+            tableName: movie_watch_links
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: movie_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: url
+                  type: VARCHAR(1024)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: platform_name
+                  type: VARCHAR(255)
