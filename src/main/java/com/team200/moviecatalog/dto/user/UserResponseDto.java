@@ -4,8 +4,6 @@ public record UserResponseDto(
         Long id,
         String email,
         String nickname,
-        String firstName,
-        String lastName,
         String profileImageUrl
 ) {
 }

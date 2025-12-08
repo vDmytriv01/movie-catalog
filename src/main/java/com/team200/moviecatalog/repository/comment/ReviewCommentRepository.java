@@ -7,6 +7,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ReviewCommentRepository extends JpaRepository<ReviewComment, Long> {
 
     List<ReviewComment> findByReviewId(Long reviewId);
-
-    List<ReviewComment> findByParentComment_Id(Long parentId);
 }

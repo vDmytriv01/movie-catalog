@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByMovieId(Long movieId);
 
-    List<Review> findByUserId(Long userId);
-
     Optional<Review> findByMovieIdAndUserId(Long movieId, Long userId);
 
     boolean existsByMovieIdAndUserId(Long movieId, Long userId);
