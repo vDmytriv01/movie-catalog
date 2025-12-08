@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -29,4 +30,21 @@ public interface MovieRepository extends JpaRepository<Movie, Long>,
     Page<Movie> findAllBySeasonOrderByAverageRatingDesc(Season season, Pageable pageable);
 
     boolean existsByTitleIgnoreCase(String title);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = """
+            UPDATE movies m
+            SET m.average_rating = (
+                SELECT COALESCE(ROUND(AVG(r.value), 2), 0)
+                FROM ratings r
+                WHERE r.movie_id = :movieId
+            ),
+                m.rating_count = (
+                SELECT COUNT(*)
+                FROM ratings r
+                WHERE r.movie_id = :movieId
+            )
+            WHERE m.id = :movieId
+            """, nativeQuery = true)
+    void updateRatingAggregates(@Param("movieId") Long movieId);
 }

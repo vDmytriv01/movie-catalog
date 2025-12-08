@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 022-adjust-movie-rating-aggregates
+      author: vadym
+      changes:
+        - modifyDataType:
+            tableName: movies
+            columnName: average_rating
+            newDataType: DECIMAL(4,2)
+        - sql:
+            comment: Recalculate rating aggregates with DB-side precision
+            sql: |
+              UPDATE movies m
+              LEFT JOIN (
+                  SELECT movie_id,
+                         ROUND(AVG(value), 2) AS avg_value,
+                         COUNT(*) AS rating_cnt
+                  FROM ratings
+                  GROUP BY movie_id
+              ) agg ON agg.movie_id = m.id
+              SET m.average_rating = COALESCE(agg.avg_value, 0),
+                  m.rating_count = COALESCE(agg.rating_cnt, 0);
+        - addNotNullConstraint:
+            tableName: movies
+            columnName: rating_count
+            columnDataType: INT

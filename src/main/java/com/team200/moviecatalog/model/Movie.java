@@ -55,9 +55,10 @@ public class Movie {
 
     @DecimalMin("0.0")
     @DecimalMax("10.0")
-    private BigDecimal averageRating;
+    @Column(name = "average_rating", precision = 4, scale = 2)
+    private BigDecimal averageRating = BigDecimal.ZERO.setScale(2);
 
-    @Column(name = "rating_count")
+    @Column(name = "rating_count", nullable = false)
     private Integer ratingCount = 0;
 
     private String posterUrl;
