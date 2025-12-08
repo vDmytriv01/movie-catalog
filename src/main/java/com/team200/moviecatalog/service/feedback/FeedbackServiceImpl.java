@@ -12,8 +12,9 @@ import com.team200.moviecatalog.model.User;
 import com.team200.moviecatalog.repository.movie.MovieRepository;
 import com.team200.moviecatalog.repository.rating.RatingRepository;
 import com.team200.moviecatalog.repository.review.ReviewRepository;
+import com.team200.moviecatalog.repository.review.projection.FeedbackProjection;
 import com.team200.moviecatalog.repository.user.UserRepository;
-import com.team200.moviecatalog.service.rating.MovieRatingUpdater;
+import com.team200.moviecatalog.service.rating.RatingAggregationDispatcher;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -34,21 +35,15 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
     private final FeedbackMapper feedbackMapper;
-    private final MovieRatingUpdater movieRatingUpdater;
+    private final RatingAggregationDispatcher ratingAggregationDispatcher;
 
     @Override
     @Transactional(readOnly = true)
     public List<FeedbackResponseDto> getFeedbackByMovie(Long movieId) {
-        List<Review> reviews = reviewRepository.findByMovieId(movieId);
+        List<FeedbackProjection> feedbacks = reviewRepository.findFeedbackDetailsByMovieId(movieId);
 
-        return reviews.stream()
-                .map(review -> {
-                    Integer rating = ratingRepository.findValueByMovieAndUser(
-                            movieId,
-                            review.getUser().getId()
-                    );
-                    return feedbackMapper.toDto(review, rating);
-                })
+        return feedbacks.stream()
+                .map(feedbackMapper::toDto)
                 .toList();
     }
 
@@ -85,7 +80,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         rating.setValue(dto.ratingValue());
         ratingRepository.save(rating);
 
-        movieRatingUpdater.recalculateAndSaveAverage(movie);
+        ratingAggregationDispatcher.schedule(movie.getId());
 
         return feedbackMapper.toDto(review, rating.getValue());
     }
