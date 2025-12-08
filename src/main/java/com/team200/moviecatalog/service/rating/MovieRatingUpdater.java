@@ -3,6 +3,7 @@ package com.team200.moviecatalog.service.rating;
 import com.team200.moviecatalog.repository.movie.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
@@ -11,7 +12,7 @@ public class MovieRatingUpdater {
 
     private final MovieRepository movieRepository;
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void recalculateAndSaveAggregates(Long movieId) {
         movieRepository.updateRatingAggregates(movieId);
     }
