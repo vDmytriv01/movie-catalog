@@ -106,27 +106,9 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGeneral(Exception ex) {
-        log.error("Unexpected error", ex);
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR,
                 "INTERNAL_ERROR",
                 "Internal server error");
-    }
-
-    @ExceptionHandler({ org.hibernate.LazyInitializationException.class })
-    public ResponseEntity<Object> handleLazyInitialization(
-            org.hibernate.LazyInitializationException ex) {
-        log.error("LazyInitializationException caught", ex);
-        return buildError(HttpStatus.INTERNAL_SERVER_ERROR,
-                "INTERNAL_ERROR",
-                ex.getMessage());
-    }
-
-    @ExceptionHandler(org.springframework.http.converter.HttpMessageConversionException.class)
-    public ResponseEntity<Object> handleSerialization(Exception ex) {
-        log.error("JSON serialization error", ex);
-        return buildError(HttpStatus.INTERNAL_SERVER_ERROR,
-                "INTERNAL_ERROR",
-                "Serialization failed");
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
