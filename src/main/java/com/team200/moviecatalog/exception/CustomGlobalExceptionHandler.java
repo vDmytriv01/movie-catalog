@@ -5,12 +5,14 @@ import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -23,29 +25,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
+@Slf4j
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex,
-            HttpHeaders headers,
-            HttpStatusCode status,
-            WebRequest request
-    ) {
-        String message = extractFirstValidationMessage(ex);
-
-        return buildError(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", message);
-    }
-
-    private String extractFirstValidationMessage(MethodArgumentNotValidException ex) {
-        for (ObjectError error : ex.getBindingResult().getAllErrors()) {
-            if (error instanceof FieldError fieldError) {
-                return fieldError.getDefaultMessage();
-            }
-            return error.getDefaultMessage();
-        }
-        return "Invalid input data";
-    }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handleNotFound(EntityNotFoundException ex) {
@@ -116,11 +97,54 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
                 ErrorMessages.INVALID_EMAIL_OR_PASSWORD);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex) {
+        return buildError(HttpStatus.FORBIDDEN,
+                "ACCESS_DENIED",
+                ErrorMessages.ACCESS_DENIED);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGeneral(Exception ex) {
+        log.error("Unexpected error", ex);
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR,
                 "INTERNAL_ERROR",
-                ErrorMessages.INTERNAL_SERVER_ERROR);
+                "Internal server error");
+    }
+
+    @ExceptionHandler({ org.hibernate.LazyInitializationException.class })
+    public ResponseEntity<Object> handleLazyInitialization(
+            org.hibernate.LazyInitializationException ex) {
+        log.error("LazyInitializationException caught", ex);
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR,
+                "INTERNAL_ERROR",
+                ex.getMessage());
+    }
+
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageConversionException.class)
+    public ResponseEntity<Object> handleSerialization(Exception ex) {
+        log.error("JSON serialization error", ex);
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR,
+                "INTERNAL_ERROR",
+                "Serialization failed");
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Object> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String message = "Invalid value for parameter '" + ex.getName() + "'";
+        return buildError(HttpStatus.BAD_REQUEST, "BAD_REQUEST", message);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request
+    ) {
+        String message = extractFirstValidationMessage(ex);
+
+        return buildError(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", message);
     }
 
     @Override
@@ -146,10 +170,14 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return buildError(HttpStatus.BAD_REQUEST, "BAD_REQUEST", message);
     }
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<Object> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        String message = "Invalid value for parameter '" + ex.getName() + "'";
-        return buildError(HttpStatus.BAD_REQUEST, "BAD_REQUEST", message);
+    private String extractFirstValidationMessage(MethodArgumentNotValidException ex) {
+        for (ObjectError error : ex.getBindingResult().getAllErrors()) {
+            if (error instanceof FieldError fieldError) {
+                return fieldError.getDefaultMessage();
+            }
+            return error.getDefaultMessage();
+        }
+        return "Invalid input data";
     }
 
     private ResponseEntity<Object> buildError(HttpStatus status, String errorCode, String message) {
