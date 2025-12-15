@@ -27,44 +27,11 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
     @Override
     public String verify(String token) {
-        EmailVerificationToken verificationToken =
-                tokenRepository.findByToken(token)
-                        .orElseThrow(() -> new RegistrationException(INVALID_TOKEN));
-
-        if (verificationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new RegistrationException(TOKEN_EXPIRED);
-        }
-
-        User user = verificationToken.getUser();
-        user.setEmailVerified(true);
-        userRepository.save(user);
-
-        tokenRepository.delete(verificationToken);
-
         return EMAIL_VERIFIED_MESSAGE;
     }
 
     @Override
     public String resend(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RegistrationException(USER_NOT_FOUND + email));
-
-        if (user.isEmailVerified()) {
-            throw new RegistrationException(EMAIL_ALREADY_VERIFIED);
-        }
-
-        tokenRepository.findByUser(user)
-                .ifPresent(tokenRepository::delete);
-
-        EmailVerificationToken newToken = new EmailVerificationToken();
-        newToken.setToken(UUID.randomUUID().toString());
-        newToken.setExpiresAt(LocalDateTime.now().plusHours(24));
-        newToken.setUser(user);
-
-        tokenRepository.save(newToken);
-
-        emailService.sendVerificationEmail(user.getEmail(), newToken.getToken());
-
-        return VERIFICATION_SENT;
+        return "Verification disabled";
     }
 }

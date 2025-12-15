@@ -8,7 +8,6 @@ import com.team200.moviecatalog.exception.ConflictException;
 import com.team200.moviecatalog.exception.EntityNotFoundException;
 import com.team200.moviecatalog.exception.RegistrationException;
 import com.team200.moviecatalog.mapper.UserMapper;
-import com.team200.moviecatalog.model.EmailVerificationToken;
 import com.team200.moviecatalog.model.Role;
 import com.team200.moviecatalog.model.RoleName;
 import com.team200.moviecatalog.model.User;
@@ -19,9 +18,7 @@ import com.team200.moviecatalog.repository.user.UserRepository;
 import com.team200.moviecatalog.repository.wishlist.WishlistRepository;
 import com.team200.moviecatalog.service.uploads.FileStorageService;
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -68,6 +65,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toModel(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.password()));
         user.setRoles(Set.of(userRole));
+        user.setEmailVerified(true);
 
         User savedUser = userRepository.save(user);
 
@@ -75,14 +73,6 @@ public class UserServiceImpl implements UserService {
                 .user(savedUser)
                 .build();
         wishlistRepository.save(wishlist);
-
-        EmailVerificationToken token = new EmailVerificationToken();
-        token.setToken(UUID.randomUUID().toString());
-        token.setExpiresAt(LocalDateTime.now().plusHours(24));
-        token.setUser(savedUser);
-        emailVerificationTokenRepository.save(token);
-
-        emailService.sendVerificationEmail(savedUser.getEmail(), token.getToken());
 
         return userMapper.toDto(savedUser);
     }
