@@ -1,5 +1,6 @@
 package com.team200.moviecatalog.controller;
 
+import com.team200.moviecatalog.dto.user.ChangePasswordRequestDto;
 import com.team200.moviecatalog.dto.user.UpdateAvatarResponseDto;
 import com.team200.moviecatalog.dto.user.UpdateUserRequestDto;
 import com.team200.moviecatalog.dto.user.UserResponseDto;
@@ -46,6 +47,15 @@ public class UserController {
             @RequestParam("file") MultipartFile file
     ) {
         return userService.updateAvatar(userDetails.getUsername(), file);
+    }
+
+    @PutMapping("/current/password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void changePassword(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody ChangePasswordRequestDto dto
+    ) {
+        userService.changePassword(userDetails.getUsername(), dto);
     }
 
     @DeleteMapping("/current")

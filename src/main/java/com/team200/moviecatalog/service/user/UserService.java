@@ -1,5 +1,6 @@
 package com.team200.moviecatalog.service.user;
 
+import com.team200.moviecatalog.dto.user.ChangePasswordRequestDto;
 import com.team200.moviecatalog.dto.user.UpdateAvatarResponseDto;
 import com.team200.moviecatalog.dto.user.UpdateUserRequestDto;
 import com.team200.moviecatalog.dto.user.UserRegisterRequestDto;
@@ -15,6 +16,8 @@ public interface UserService {
     UserResponseDto updateUser(String email, UpdateUserRequestDto dto);
 
     UpdateAvatarResponseDto updateAvatar(String email, MultipartFile file);
+
+    void changePassword(String email, ChangePasswordRequestDto dto);
 
     void deleteUser(String email);
 }

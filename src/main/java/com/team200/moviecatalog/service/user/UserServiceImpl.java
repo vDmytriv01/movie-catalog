@@ -1,5 +1,6 @@
 package com.team200.moviecatalog.service.user;
 
+import com.team200.moviecatalog.dto.user.ChangePasswordRequestDto;
 import com.team200.moviecatalog.dto.user.UpdateAvatarResponseDto;
 import com.team200.moviecatalog.dto.user.UpdateUserRequestDto;
 import com.team200.moviecatalog.dto.user.UserRegisterRequestDto;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -127,6 +129,24 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         return new UpdateAvatarResponseDto(url);
+    }
+
+    @Override
+    public void changePassword(String email, ChangePasswordRequestDto dto) {
+
+        if (!dto.newPassword().equals(dto.repeatNewPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(dto.oldPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(dto.newPassword()));
+        userRepository.save(user);
     }
 
     @Override
