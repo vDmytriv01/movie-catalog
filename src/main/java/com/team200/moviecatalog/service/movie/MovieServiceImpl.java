@@ -6,6 +6,8 @@ import com.team200.moviecatalog.dto.movie.MovieRequestDto;
 import com.team200.moviecatalog.dto.movie.MovieResponseDto;
 import com.team200.moviecatalog.dto.movie.MovieSearchParametersDto;
 import com.team200.moviecatalog.dto.movie.MovieShortResponseDto;
+import com.team200.moviecatalog.exception.ConflictException;
+import com.team200.moviecatalog.exception.EntityNotFoundException;
 import com.team200.moviecatalog.mapper.MovieMapper;
 import com.team200.moviecatalog.model.AgeRating;
 import com.team200.moviecatalog.model.Category;
@@ -18,7 +20,6 @@ import com.team200.moviecatalog.repository.genre.GenreRepository;
 import com.team200.moviecatalog.repository.movie.MovieRepository;
 import com.team200.moviecatalog.repository.movie.MovieSpecificationBuilder;
 import com.team200.moviecatalog.service.movieactor.MovieActorService;
-import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Year;
@@ -55,7 +56,7 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     public MovieResponseDto createMovie(MovieRequestDto dto) {
         if (movieRepository.existsByTitleIgnoreCase(dto.title())) {
-            throw new IllegalArgumentException(
+            throw new ConflictException(
                     String.format(MOVIE_ALREADY_EXISTS, dto.title()));
         }
         Movie movie = movieMapper.toEntity(dto);
@@ -73,13 +74,15 @@ public class MovieServiceImpl implements MovieService {
         String newTitle = dto.title();
         if (newTitle != null && !newTitle.equalsIgnoreCase(movie.getTitle())
                 && movieRepository.existsByTitleIgnoreCase(newTitle)) {
-            throw new IllegalArgumentException(
+            throw new ConflictException(
                     String.format(MOVIE_ALREADY_EXISTS, newTitle));
         }
         movieMapper.updateMovieFromDto(dto, movie);
         enrichMovieWithDateData(movie);
         movieRepository.save(movie);
-        movieActorService.updateCast(movie.getId(), dto.actorIds());
+        if (dto.actorIds() != null) {
+            movieActorService.updateCast(movie.getId(), dto.actorIds());
+        }
         return movieMapper.toResponseDto(movie);
     }
 
@@ -174,8 +177,8 @@ public class MovieServiceImpl implements MovieService {
                 .filter(m -> !m.getId().equals(movieId))
                 .filter(m -> m.getGenres().stream().anyMatch(g -> genreIds.contains(g.getId())))
                 .sorted(Comparator.comparing(
-                        (Movie m) -> Optional.ofNullable(m.getAverageRating())
-                                .orElse(BigDecimal.ZERO))
+                                (Movie m) -> Optional.ofNullable(m.getAverageRating())
+                                        .orElse(BigDecimal.ZERO))
                         .reversed())
                 .limit(10)
                 .map(movieMapper::toShortDto)

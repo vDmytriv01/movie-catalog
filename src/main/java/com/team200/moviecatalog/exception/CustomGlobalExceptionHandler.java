@@ -155,7 +155,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     private String extractFirstValidationMessage(MethodArgumentNotValidException ex) {
         for (ObjectError error : ex.getBindingResult().getAllErrors()) {
             if (error instanceof FieldError fieldError) {
-                return fieldError.getDefaultMessage();
+                return fieldError.getField() + " " + fieldError.getDefaultMessage();
             }
             return error.getDefaultMessage();
         }
